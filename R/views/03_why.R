@@ -1,0 +1,95 @@
+# Step 3, Explain: what explains risk, and does geography matter beyond it?
+# Ordinary regression on national wealth, tested for spatial dependence,
+# followed by the spatial model the Lagrange multiplier tests select.
+
+WHY_GROUPS <- c("Risk and its three parts", "Vulnerability", "Coping capacity")
+
+register_view(
+  id = "why", title = "Why", mode = "analyst", icon = "magnifying-glass-chart", order = 20,
+  ui = function(id, store) {
+    ns <- NS(id)
+    tagList(
+      step_head("why", "What explains risk, and does geography still matter?",
+                "Richer countries can prepare and recover better. But once wealth is taken into account, do neighbouring countries still look alike?",
+                controls(selectInput(ns("y"), "Explain", variable_choices(store, WHY_GROUPS), selected = "inform_risk", width = "280px"))),
+      uiOutput(ns("answer")),
+      continent_scatter_ui(ns("scatter"), "Wealth and risk, continent by continent",
+                           "Each panel is one continent, with its own fitted line and correlation. Click a point to label the country.", height = 600),
+      gr_grid(cols = "1.3fr 1fr",
+        map_ui(ns("resid"), "What wealth does not explain", "Red: riskier than its wealth predicts. Blue: less risky.", height = 440),
+        gr_card(title = "How the model was chosen", class = "interp", uiOutput(ns("steps")))),
+      gr_card(title = "Model results", subtitle = "Coefficient of wealth and fit of the three models (click to unfold)", class = "folded",
+              tableOutput(ns("models"))),
+      method_box(
+        p(strong("Model. "), "The outcome is regressed on GDP per person (log scale, latest year up to 2022, standardised so the coefficient is the change per standard deviation of log wealth). A single, well-measured explanation keeps the result readable. INFORM components are not used as explanations, to avoid explaining the index with itself."),
+        p(strong("Testing for geography. "), "If the leftover differences (residuals) of ordinary regression are spatially clustered (Moran's I of residuals), its standard errors are unreliable. Lagrange multiplier tests indicate the kind of spatial model needed: a spatial lag model (a country's risk depends on its neighbours' risk) or a spatial error model (unmeasured factors shared by neighbours). The decision rule follows Anselin (2005)."),
+        p(strong("Continents. "), "The panels show whether the wealth relationship holds within each continent, not only across the world, which guards against a pattern created only by differences between continents."),
+        p(strong("Missing data. "), "Countries without GDP data are left out before the model is fitted, and the neighbours are worked out again among the rest; they are listed under the answer and shown grey on the map.")),
+      next_step("why")
+    )
+  },
+  server = function(id, store, shared) {
+    moduleServer(id, function(input, output, session) {
+      need_data(store, "inform", "owid")
+      dat <- store$all
+      preds <- "log_gdp_pc"
+      lab <- reactive(var_label(store, input$y))
+      # Missing-data contingency: countries without the outcome or GDP are left out, weights rebuilt for the rest.
+      chk <- reactive(analysis_data(store, c(input$y, preds), c(lab(), "GDP per person"), d = dat))
+      fit <- reactive(spatial_regression(chk()$data, input$y, preds, chk()$w$lw, standardise = TRUE))
+      src <- paste0("Sources: ", store$sources$inform, "; ", store$sources$owid, ".")
+
+      output$answer <- renderUI({
+        f <- fit()
+        b <- f$coefs[f$coefs$model == f$choice$model & f$coefs$term == "log_gdp_pc", ]
+        txt <- sprintf("Wealth explains <b>%.0f%%</b> of the differences in %s between countries: a country one standard deviation richer scores %.1f points %s on the 0-10 scale. ",
+                       100 * f$r2, lc(lab()), abs(b$estimate), if (b$estimate < 0) "lower" else "higher")
+        txt <- paste0(txt, if (f$residual_moran$p.value < 0.05)
+          sprintf("But what wealth leaves unexplained still clusters (p %s), so a <b>%s model</b> fits best: neighbouring countries share risk factors that income alone does not capture.",
+                  fmt_p(f$residual_moran$p.value), lc(f$choice$model))
+          else "What wealth leaves unexplained is not clustered, so ordinary regression is adequate.")
+        tagList(answer_box(HTML(txt)), data_note(chk()))
+      })
+
+      continent_scatter_server("scatter", data_r = reactive(chk()$data), x_r = reactive("gdp_per_capita"), y_r = reactive(input$y),
+        xlab_r = reactive("GDP per person (US dollars, log scale)"), ylab_r = reactive(paste(lab(), "(0-10)")), log_x_r = reactive(TRUE),
+        title = reactive(sprintf("%s against GDP per person, by continent", lab())),
+        caption = reactive(sprintf("Line: least-squares fit with 95%% confidence band in each continent; panel titles give Spearman's rho. n = %d countries with GDP data. %s", fit()$n, src)),
+        filename = reactive(paste0("wealth_by_continent_", input$y)))
+
+      rvec <- reactive(chk()$expand(unname(stats::residuals(fit()$ols))))
+      map_server("resid",
+        leaflet_r = reactive(leaflet_choropleth(store, rvec(), "residual", "Unexplained",
+                                                label_extra = "<br/><i>Positive: riskier than its wealth predicts</i>")),
+        static_r = reactive(static_choropleth(store, rvec(), "Residual (observed minus predicted)", "diverging")),
+        title = reactive(sprintf("%s not explained by wealth (regression residuals)", lab())),
+        caption = reactive(sprintf("Ordinary regression residuals (grey: excluded, missing data); Moran's I of residuals = %.2f, p %s. %s",
+                                   unname(fit()$residual_moran$estimate[1]), fmt_p(fit()$residual_moran$p.value), src)),
+        filename = reactive(paste0("residuals_", input$y)))
+
+      output$steps <- renderUI({
+        f <- fit(); fs <- f$fits; i <- match(f$choice$model, fs$model)
+        tags$ol(class = "steps",
+          tags$li(strong("Ordinary regression. "), sprintf("Wealth alone explains %.0f%% of the variation (R squared = %.2f, %d countries).", 100 * f$r2, f$r2, f$n)),
+          tags$li(strong("Check the leftovers. "), sprintf("The unexplained part is %s (Moran's I = %.2f, p %s).",
+                  if (f$residual_moran$p.value < 0.05) "clustered in space" else "not clustered", unname(f$residual_moran$estimate[1]), fmt_p(f$residual_moran$p.value))),
+          tags$li(strong("Choose the spatial model. "), "Lagrange multiplier (LM) tests compare the two kinds of spatial model. ", f$choice$why),
+          tags$li(HTML(sprintf("<strong>Result: %s model.</strong> ", f$choice$model)),
+                  if (i > 1) sprintf("It fits better than ordinary regression (AIC %.0f against %.0f), and its residuals are %s (Moran's I p %s).",
+                                     fs$AIC[i], fs$AIC[1], if (isTRUE(fs$residual_moran_p[i] >= 0.05)) "no longer clustered" else "still somewhat clustered", fmt_p(fs$residual_moran_p[i]))
+                  else "Ordinary regression is adequate."))
+      })
+
+      output$models <- renderTable({
+        f <- fit()
+        cf <- f$coefs[f$coefs$term == "log_gdp_pc", c("model", "estimate", "se", "p")]
+        out <- merge(cf, f$fits[, c("model", "AIC", "spatial_parameter", "residual_moran_p")], by = "model")
+        out <- out[match(c("OLS", "Spatial lag", "Spatial error"), out$model), ]
+        data.frame(Model = c("Ordinary regression", "Spatial lag", "Spatial error"),
+                   `Wealth coefficient` = sprintf("%.3f", out$estimate), `Standard error` = sprintf("%.3f", out$se), `p` = fmt_p(out$p),
+                   `Spatial parameter` = ifelse(is.na(out$spatial_parameter), "-", sprintf("%.3f", out$spatial_parameter)),
+                   AIC = sprintf("%.1f", out$AIC), `Residual Moran's I p` = fmt_p(out$residual_moran_p),
+                   Selected = ifelse(out$model == f$choice$model, "Yes", ""), check.names = FALSE)
+      }, striped = TRUE, width = "100%")
+    })
+  })
