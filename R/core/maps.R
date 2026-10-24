@@ -15,13 +15,15 @@ BASEMAPS <- c(
 )
 PLACE_NAMES <- "Place names"
 
-# Zoom buttons and a full-screen button, top right under the layer switcher.
+# Zoom, Enlarge and full-screen buttons, top right under the layer switcher,
+# and a drag handle at the bottom right of each map card (see www/app.js).
 # Full screen enlarges the whole map card (title, legend and download menu
 # included); on the Explore page it enlarges the map together with the
 # country panel. Press Esc or the button again to return.
 MAP_CONTROLS_JS <- "function(el, x) {
   var map = this;
   L.control.zoom({position: 'topright'}).addTo(map);
+  if (window.grMapEnhance) window.grMapEnhance(el, map);   /* Enlarge button and drag handle (www/app.js) */
   var Full = L.Control.extend({ options: { position: 'topright' }, onAdd: function () {
     var box = L.DomUtil.create('div', 'leaflet-bar gr-full');
     var a = L.DomUtil.create('a', '', box); a.href = '#'; a.title = 'Full screen (Esc to leave)'; a.setAttribute('role', 'button');

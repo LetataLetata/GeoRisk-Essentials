@@ -72,7 +72,7 @@ Every map opens on the satellite background (Esri World Imagery). The layer butt
 
 ## Presenting
 
-Every map has a full-screen button (top right, under the zoom buttons); press Esc to return. All results are precomputed in `data/results_cache.rds`, so changing a setting only redraws the page. After changing the data or the analysis code, run `Rscript scripts/precompute_results.R` once to refresh them (if you don't, the app notices the change and computes results on first use instead).
+Every map can be made bigger three ways: the Enlarge button (top right, under the zoom buttons) widens it to the full page width and most of the screen height, click again to shrink; drag the handle at the map's bottom right corner to set any height and width (double-click it to reset); or use the full-screen button below Enlarge (press Esc to return). All results are precomputed in `data/results_cache.rds`, so changing a setting only redraws the page. After changing the data or the analysis code, run `Rscript scripts/precompute_results.R` once to refresh them (if you don't, the app notices the change and computes results on first use instead).
 
 ## Run it
 

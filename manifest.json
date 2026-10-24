@@ -3363,7 +3363,7 @@
       "checksum": "3c1aa5906acc7b738f5a4b2ff3ba2293"
     },
     "R/core/maps.R": {
-      "checksum": "277fec7bf6bb788be41d5afbbfdd069c"
+      "checksum": "9bc50493701103291576bb2b36eed07a"
     },
     "R/core/registry.R": {
       "checksum": "8937e9da10260dc48d191593c76bb230"
@@ -3399,7 +3399,7 @@
       "checksum": "84aafeb7537512cb42b9ded4f50dfc0b"
     },
     "README.md": {
-      "checksum": "0560f2c97488fa9c726815ed282c12da"
+      "checksum": "b5c9015a9491e1cb48d7b1f0374bb150"
     },
     "app.R": {
       "checksum": "073abdc87e14e0037bc47e42f7c015a8"
@@ -3429,7 +3429,7 @@
       "checksum": "e29c3d3a43b0b9c3944589f65716b9e9"
     },
     "docs/architecture.html": {
-      "checksum": "7fbd6f0ef20b91988a41dd6556040454"
+      "checksum": "d8955b789fb085a9a7134e618d7877bc"
     },
     "docs/img/01_idea.png": {
       "checksum": "78910f3df862beeb9a8437c3ae983cb0"
@@ -3441,7 +3441,7 @@
       "checksum": "a38a4bddc1342133c8ac86b3c8ab0ce6"
     },
     "docs/img/04_wireframes.png": {
-      "checksum": "d8a4ee934356df49c4f1877775df73fe"
+      "checksum": "44c57159476adeea2cf0bfe77adb3751"
     },
     "scripts/precompute_results.R": {
       "checksum": "5e31f7761551cc91abf1941ce8dde9cd"
@@ -3450,10 +3450,10 @@
       "checksum": "840680b8db5349a59b68605a52c12edf"
     },
     "www/app.js": {
-      "checksum": "fc05d06dfcde59fae366501da9576450"
+      "checksum": "233270f3db717fede05fdc04b8905057"
     },
     "www/styles.css": {
-      "checksum": "751cc0f7208bfbb817340cef93646ebe"
+      "checksum": "616f12296e856beba128da7e747df2c5"
     }
   },
   "users": null

@@ -1,3 +1,76 @@
+// ---- Map sizing: an Enlarge button and a drag handle on every map.
+// Enlarge: the map card spans the full width and most of the screen height
+// (click again to shrink). Drag the handle at the bottom right of a map card
+// to change its height, and its width where it shares a row with another
+// panel. Double-click the handle to go back to the original size.
+window.grMapEnhance = function (el, map) {
+  var card = el.closest('.gr-card'); if (!card) return;
+  var explore = el.closest('.explore-grid');
+  var grid = explore || (card.parentElement && card.parentElement.classList.contains('gr-grid') ? card.parentElement : null);
+  var sizeEl = explore || el;                       // element whose height sets the map height
+  var h0 = sizeEl.style.height || '', cols0 = grid ? (grid.style.gridTemplateColumns || '') : '';
+  var raf = null;
+  var refresh = function () { if (raf) return; raf = requestAnimationFrame(function () { raf = null; map.invalidateSize({ pan: false }); }); };
+  var later = function () { setTimeout(function () { map.invalidateSize({ pan: false }); }, 260); };
+  var ICON_BIG = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_SMALL = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M20 10h-6V4M4 14h6v6M14 10l7-7M10 14l-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var big = false, link = null;
+  function setBig(on) {
+    big = on;
+    var holder = explore || card;
+    holder.classList.toggle('map-wide', on);
+    if (grid && !explore) grid.classList.toggle('grid-stack', on);
+    if (grid) grid.style.gridTemplateColumns = on ? (explore ? 'minmax(0, 1fr) 340px' : '') : cols0;
+    sizeEl.style.height = on ? (explore ? '86vh' : '76vh') : h0;
+    if (link) { link.innerHTML = on ? ICON_SMALL : ICON_BIG; link.title = on ? 'Shrink map back' : 'Enlarge map (full width, most of the screen)'; }
+    if (on) setTimeout(function () { holder.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    setTimeout(function () {
+      map.invalidateSize({ pan: false });
+      if (on) { saved = { c: map.getCenter(), z: map.getZoom() }; if (map.getZoom() < 3) map.fitBounds([[-56, -168], [74, 180]], { animate: false }); }
+      else if (saved) { map.setView(saved.c, saved.z, { animate: false }); saved = null; }
+    }, 280);
+  }
+  var saved = null;
+  var Big = L.Control.extend({ options: { position: 'topright' }, onAdd: function () {
+    var box = L.DomUtil.create('div', 'leaflet-bar gr-big');
+    link = L.DomUtil.create('a', '', box); link.href = '#'; link.setAttribute('role', 'button');
+    link.innerHTML = ICON_BIG; link.title = 'Enlarge map (full width, most of the screen)';
+    L.DomEvent.disableClickPropagation(box);
+    L.DomEvent.on(link, 'click', function (e) { L.DomEvent.preventDefault(e); setBig(!big); });
+    return box; } });
+  new Big().addTo(map);
+
+  // Drag handle
+  var handle = document.createElement('div');
+  handle.className = 'map-resize'; handle.title = 'Drag to resize the map; double-click to reset';
+  handle.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14"><path d="M14 6L6 14M14 10l-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  var old = card.querySelector(':scope > .map-resize'); if (old) old.remove();
+  card.appendChild(handle);
+  var start = null;
+  handle.addEventListener('pointerdown', function (e) {
+    e.preventDefault(); handle.setPointerCapture(e.pointerId);
+    var cols = grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').length : 1;
+    start = { x: e.clientX, y: e.clientY, h: sizeEl.getBoundingClientRect().height, w: card.getBoundingClientRect().width,
+              gw: grid ? grid.getBoundingClientRect().width : 0, two: grid && cols >= 2 && !card.classList.contains('map-wide'),
+              first: grid ? grid.firstElementChild === card || (explore && true) : true };
+    document.body.classList.add('resizing');
+  });
+  handle.addEventListener('pointermove', function (e) {
+    if (!start) return;
+    var h = Math.max(260, Math.min(window.innerHeight * 0.95, start.h + (e.clientY - start.y)));
+    sizeEl.style.height = h + 'px';
+    if (start.two) {
+      var gap = parseFloat(getComputedStyle(grid).columnGap) || 16;
+      var w = Math.max(320, Math.min(start.gw - 300 - gap, start.w + (start.first ? 1 : -1) * (e.clientX - start.x)));
+      grid.style.gridTemplateColumns = start.first ? (w + 'px minmax(0, 1fr)') : ('minmax(0, 1fr) ' + w + 'px');
+    }
+    refresh();
+  });
+  var stop = function () { if (!start) return; start = null; document.body.classList.remove('resizing'); later(); };
+  handle.addEventListener('pointerup', stop); handle.addEventListener('pointercancel', stop);
+  handle.addEventListener('dblclick', function () { if (big) setBig(false); sizeEl.style.height = h0; if (grid) grid.style.gridTemplateColumns = cols0; later(); });
+};
+
 // Navigation, foldable cards and compact layout.
 $(function () {
   document.body.classList.add('mode-analyst');
