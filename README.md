@@ -4,6 +4,10 @@ A five-step dashboard: spatial statistics of disaster risk for 191 countries (IN
 
 ## Open the app
 
+**On the web (no R needed):** https://01a16f44-5481-89af-2d69-51579eddc650.share.connect.posit.cloud
+
+Hosted free on Posit Connect Cloud. If the app has not been used for a while, the first visit takes up to a minute to wake it.
+
 **From R or RStudio (works now).** Paste this into the R console. The first time, it installs the packages the app needs (a few minutes); after that it starts in seconds. It always runs the latest version from this page.
 
 ```r
@@ -15,8 +19,6 @@ shiny::runGitHub("GeoRisk-Essentials", "LetataLetata", launch.browser = TRUE)
 ```
 
 **Download a copy:** [GeoRisk-Essentials-main.zip](https://github.com/LetataLetata/GeoRisk-Essentials/archive/refs/heads/main.zip). Unzip it, open `app.R` in RStudio and click Run App.
-
-**On the web (no R needed):** being set up on Posit Connect Cloud; the link will appear here.
 
 **How it is built:** system architecture, app logic and wireframes are in [docs/](docs/README.md).
 
