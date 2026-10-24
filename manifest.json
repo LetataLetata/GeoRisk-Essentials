@@ -3363,7 +3363,7 @@
       "checksum": "3c1aa5906acc7b738f5a4b2ff3ba2293"
     },
     "R/core/maps.R": {
-      "checksum": "9bc50493701103291576bb2b36eed07a"
+      "checksum": "8abb498f5d29f3b151ce648233849c97"
     },
     "R/core/registry.R": {
       "checksum": "8937e9da10260dc48d191593c76bb230"
@@ -3450,7 +3450,7 @@
       "checksum": "840680b8db5349a59b68605a52c12edf"
     },
     "www/app.js": {
-      "checksum": "233270f3db717fede05fdc04b8905057"
+      "checksum": "c434ca63b82f9c60e60609f258b7a589"
     },
     "www/styles.css": {
       "checksum": "616f12296e856beba128da7e747df2c5"

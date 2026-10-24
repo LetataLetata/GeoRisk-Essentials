@@ -37,15 +37,8 @@ MAP_CONTROLS_JS <- "function(el, x) {
     });
     return box; } });
   new Full().addTo(map);
-  var saved = null;
-  var fix = function () { setTimeout(function () {
-    var full = document.fullscreenElement || document.webkitFullscreenElement;
-    var mine = full && full.contains(el);
-    map.invalidateSize();
-    if (mine && !saved) { saved = { c: map.getCenter(), z: map.getZoom() };
-      if (map.getZoom() < 3) map.fitBounds([[-56, -168], [74, 180]], { animate: false }); }
-    else if (!mine && saved) { map.setView(saved.c, saved.z, { animate: false }); saved = null; }
-  }, 250); };
+  /* The frame watcher in www/app.js redraws and refits the map; this is a backup for older browsers. */
+  var fix = function () { setTimeout(function () { map.invalidateSize(); }, 250); };
   document.addEventListener('fullscreenchange', fix); document.addEventListener('webkitfullscreenchange', fix);
 }"
 

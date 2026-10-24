@@ -23,14 +23,11 @@ window.grMapEnhance = function (el, map) {
     if (grid) grid.style.gridTemplateColumns = on ? (explore ? 'minmax(0, 1fr) 340px' : '') : cols0;
     sizeEl.style.height = on ? (explore ? '86vh' : '76vh') : h0;
     if (link) { link.innerHTML = on ? ICON_SMALL : ICON_BIG; link.title = on ? 'Shrink map back' : 'Enlarge map (full width, most of the screen)'; }
-    if (on) setTimeout(function () { holder.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
-    setTimeout(function () {
-      map.invalidateSize({ pan: false });
-      if (on) { saved = { c: map.getCenter(), z: map.getZoom() }; if (map.getZoom() < 3) map.fitBounds([[-56, -168], [74, 180]], { animate: false }); }
-      else if (saved) { map.setView(saved.c, saved.z, { animate: false }); saved = null; }
-    }, 280);
+    if (on) setTimeout(function () {
+      var bar = document.querySelector('.topbar'); var off = bar ? bar.getBoundingClientRect().bottom + 12 : 16;
+      window.scrollTo({ top: window.scrollY + holder.getBoundingClientRect().top - off, behavior: 'smooth' });
+    }, 50);
   }
-  var saved = null;
   var Big = L.Control.extend({ options: { position: 'topright' }, onAdd: function () {
     var box = L.DomUtil.create('div', 'leaflet-bar gr-big');
     link = L.DomUtil.create('a', '', box); link.href = '#'; link.setAttribute('role', 'button');
@@ -69,6 +66,27 @@ window.grMapEnhance = function (el, map) {
   var stop = function () { if (!start) return; start = null; document.body.classList.remove('resizing'); later(); };
   handle.addEventListener('pointerup', stop); handle.addEventListener('pointercancel', stop);
   handle.addEventListener('dblclick', function () { if (big) setBig(false); sizeEl.style.height = h0; if (grid) grid.style.gridTemplateColumns = cols0; later(); });
+
+  // Watch the map's frame. Whenever it changes size (Enlarge, dragging, full
+  // screen, folding panels, resizing the window) the map redraws at once, and
+  // in the world view it zooms so the world fills the frame with no empty band.
+  var WORLD_VIEW = 3;
+  function fillWorld() {
+    var s = map.getSize(); if (!s.x || !s.y) return;
+    var snap = function (z) { return Math.ceil(z * 4) / 4; };
+    var zFill = snap(Math.max(Math.log2(s.x / 256), Math.log2(s.y / 256)));
+    map.setMinZoom(Math.max(1, snap(Math.log2(s.y / 256))));
+    // In the world view, keep the whole world centred in the frame.
+    if (map.getZoom() < WORLD_VIEW) map.setView([18, 10], zFill, { animate: false });
+  }
+  var pending = null;
+  var onResize = function () {
+    if (pending) cancelAnimationFrame(pending);
+    pending = requestAnimationFrame(function () { pending = null; map.invalidateSize({ animate: false }); fillWorld(); });
+  };
+  if (window.ResizeObserver) { if (el._grRO) el._grRO.disconnect(); el._grRO = new ResizeObserver(onResize); el._grRO.observe(el); }
+  else window.addEventListener('resize', onResize);
+  map.whenReady(function () { setTimeout(onResize, 50); });
 };
 
 // Navigation, foldable cards and compact layout.
