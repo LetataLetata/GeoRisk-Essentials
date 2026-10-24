@@ -2,14 +2,21 @@
 
 A five-step dashboard: spatial statistics of disaster risk for 191 countries (INFORM Risk Index 2026), built in R Shiny.
 
-**Open the app**
+## Open the app
 
-- **On the web (no R needed):** being set up on Posit Connect Cloud; the link will appear here.
-- **From R or RStudio** (runs on your own computer; install the packages listed under "Run it" first):
+**From R or RStudio (works now).** Paste this into the R console. The first time, it installs the packages the app needs (a few minutes); after that it starts in seconds. It always runs the latest version from this page.
 
 ```r
-shiny::runGitHub("GeoRisk-Essentials", "LetataLetata")
+pkgs <- c("shiny", "bslib", "leaflet", "sf", "spdep", "spatialreg", "DT", "ggplot2", "plotly",
+          "htmltools", "htmlwidgets", "jsonlite", "patchwork", "ragg", "svglite", "ggrepel", "zip")
+missing <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing)) install.packages(missing)
+shiny::runGitHub("GeoRisk-Essentials", "LetataLetata", launch.browser = TRUE)
 ```
+
+**Download a copy:** [GeoRisk-Essentials-main.zip](https://github.com/LetataLetata/GeoRisk-Essentials/archive/refs/heads/main.zip). Unzip it, open `app.R` in RStudio and click Run App.
+
+**On the web (no R needed):** being set up on Posit Connect Cloud; the link will appear here.
 
 **How it is built:** system architecture, app logic and wireframes are in [docs/](docs/README.md).
 
