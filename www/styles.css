@@ -649,3 +649,56 @@ body.compact .big-num { font-size: 2.3rem; }
 }
 .top-row { grid-template-columns: 140px 1fr 30px; }
 @media (max-width: 640px) { .hero-simple::before, .hero-simple::after { display: none; } }
+
+/* ============================================ Explore: explaining a score */
+.xmode { font-size: 0.82rem; color: var(--text); background: #F3F6F4; border-radius: 12px; padding: 7px 10px; margin-bottom: 10px; }
+.xmode svg { color: var(--green); fill: currentColor; }
+.xlinkbtn { border: 0; background: transparent; color: var(--green-dark); font-weight: 700; padding: 0 2px; font-size: 0.82rem; }
+.xlinkbtn:hover { text-decoration: underline; }
+.xlinkbtn svg { margin-left: 3px; fill: currentColor; }
+.xfocus { display: block; }
+.xfocus-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.xfocus-row { display: flex; align-items: center; gap: 16px; }
+.xfocus-track { margin: 12px 0 6px; }
+.xfocus .xsub { margin-top: 2px; }
+.xwhy { background: linear-gradient(135deg, rgba(15, 61, 46, 0.95), rgba(21, 128, 61, 0.88)); color: #fff; border-radius: 14px; padding: 12px 14px; margin-bottom: 6px; }
+.xwhy-tag { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: #86EFAC; margin-bottom: 4px; }
+.xwhy-tag svg { fill: currentColor; }
+.xwhy p { margin: 0; font-size: 0.92rem; line-height: 1.5; color: #F0FDF4; }
+.xpart, .xpart-wrap { display: grid; width: 100%; border: 0; background: transparent; text-align: left; border-radius: 10px; padding: 5px 6px; color: var(--ink); }
+.xpart { grid-template-columns: minmax(0, 1.2fr) 1fr 32px; gap: 8px; align-items: center; font-size: 0.86rem; }
+.xpart-wrap { display: block; padding: 2px 6px; }
+.xpart:hover, .xpart-wrap:hover { background: #F3F6F4; }
+.xpart-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xpart-score { font-weight: 800; text-align: right; }
+.xpart .xbar-track { height: 9px; }
+.xpart .xbar-fill { display: block; }
+button.xchip { border: 0; cursor: pointer; }
+button.xchip:hover { background: #E3F4E8; }
+.xfactrow { padding: 8px 0; border-bottom: 1px solid #F0F2F1; }
+.xfact-top { display: flex; justify-content: space-between; gap: 10px; font-size: 0.86rem; color: var(--text); }
+.xfact-top strong { color: var(--ink); white-space: nowrap; }
+.xfact-cmp { display: flex; align-items: center; gap: 8px; font-size: 0.74rem; color: var(--muted); margin-top: 5px; }
+.xfact-track { flex: 0 0 90px; height: 6px; background: #EEF1EF; border-radius: 999px; overflow: hidden; }
+.xfact-fill { display: block; height: 100%; border-radius: 999px; }
+.xfact-src { font-size: 0.7rem; color: #9CA3AF; margin-top: 3px; }
+.xev { background: #F9FBFA; border: 1px solid #EEF2EF; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+.xev-title { font-weight: 700; color: var(--ink); font-size: 0.86rem; margin-bottom: 6px; }
+.xev-title svg { color: #DC2626; fill: currentColor; margin-right: 2px; }
+.xev p { font-size: 0.85rem; color: var(--text); margin: 0 0 4px; line-height: 1.45; }
+.xev-bars { display: grid; gap: 5px; }
+.xev-bar { display: grid; grid-template-columns: 40px 1fr 84px; gap: 8px; align-items: center; font-size: 0.82rem; }
+.xev-year { color: var(--muted); font-weight: 600; }
+.xev-track { height: 10px; background: #EEF1EF; border-radius: 999px; overflow: hidden; }
+.xev-fill { display: block; height: 100%; background: #DC2626; border-radius: 999px; }
+.xev-n { text-align: right; font-weight: 700; color: var(--ink); }
+.xev-list { margin: 2px 0 2px; padding-left: 18px; font-size: 0.85rem; color: var(--text); }
+.xpath { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.xpath-step { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 0.8rem; display: inline-flex; gap: 6px; color: var(--text); }
+.xpath-step strong { color: var(--ink); }
+.xpath-step.on { background: var(--green-dark); border-color: var(--green-dark); color: #fff; }
+.xpath-step.on strong { color: #86EFAC; }
+.xpath-step:hover:not(.on) { border-color: var(--green); }
+.xpath-arrow { color: #A7B3AC; font-size: 0.7rem; }
+.xpath-arrow svg { fill: currentColor; }
+.xfocus .xrisk-score { white-space: nowrap; }

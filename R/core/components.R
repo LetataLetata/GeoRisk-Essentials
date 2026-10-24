@@ -1,6 +1,9 @@
 # Reusable building blocks: cards, KPI tiles, and chart, map and table cards
 # that come with publication-quality downloads (PNG 300 dpi, PDF, SVG, CSV).
 
+# Bold text with no stray space after it (so "word," not "word ,").
+b_ <- function(...) tags$strong(..., .noWS = "after")
+
 # ---------------------------------------------------------------- layout --
 gr_card <- function(..., title = NULL, subtitle = NULL, tools = NULL, class = NULL) {
   div(class = paste("gr-card", class),
@@ -29,7 +32,7 @@ PAGE_HOW <- list(
   why = "Choose what to explain at the top right. Click points in the scatter to label countries. On the map, red means riskier than the country's wealth predicts, blue means safer.",
   sure = "Each bar shows how far a country's score could move if its data contain errors: the longer the bar, the less certain. Blind spots are high-risk countries with weak data.",
   act = "Choose a danger at the top right. Dark purple countries face both high danger and high vulnerability; the list on the right names them by region.",
-  explore = "Click any country on the map, or type its name in \"Find a country\". Its profile opens on the right; click a neighbour in the profile to jump to it."
+  explore = "Click any country on the map, or type its name in \"Find a country\". Choose a hazard or weakness in \"Colour countries by\" and the profile explains that score: why the country is rated so, the facts and recorded events behind it. Click a part or a step in the profile to switch the map to it."
 )
 
 how_strip <- function(how) {

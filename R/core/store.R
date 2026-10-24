@@ -6,7 +6,9 @@ load_store <- function(dir = "data") {
   rd <- function(f) tryCatch(readRDS(file.path(dir, f)), error = function(e) { message("Could not load ", f); NULL })
   s <- list(
     inform = rd("inform.rds"), dict = rd("inform_dictionary.rds"), quality = rd("inform_quality.rds"),
-    trend = rd("inform_trend.rds"), owid = rd("owid_energy.rds"), geo = rd("geography.rds")
+    trend = rd("inform_trend.rds"), owid = rd("owid_energy.rds"), geo = rd("geography.rds"),
+    # The measured facts behind the scores, and recorded earthquakes (scripts/prepare_indicators.R).
+    indicators = rd("inform_indicators.rds"), quakes = rd("earthquakes.rds")
   )
   # Comparable versions (R/analysis/harmonise.R): reliability-adjusted scores
   # with a world-average prior, and percentile ranks.
@@ -44,6 +46,8 @@ load_store <- function(dir = "data") {
     owid = "Our World in Data, energy dataset (Energy Institute, Ember, EIA and others)",
     boundaries = "Natural Earth 1:50m admin-0 boundaries",
     basemaps = "Background maps: CARTO, OpenStreetMap contributors, Esri World Imagery, OpenTopoMap (free tile services)",
+    indicators = "INFORM Risk Mid-2026 indicator data (EC JRC), compiled from GEM, UNDRR, EM-DAT (CRED), FAO, WHO, UNHCR, IDMC, UNDP, World Bank and others",
+    quakes = "Significant earthquakes M5.5 and stronger, 1965-2016 (US Geological Survey catalogue)",
     facts = "Country facts: REST Countries (restcountries.com) and Wikipedia page summaries, fetched live when online"
   )
   s

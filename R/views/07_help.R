@@ -119,8 +119,8 @@ register_view(
                     tags$td("A map where danger meets vulnerability, the countries carrying both, what helps"),
                     tags$td("Choose a danger (floods, drought, conflict and others)")),
             tags$tr(tags$td(b_("Explore")), tags$td("What about one country?"),
-                    tags$td("A world map and a profile of the country you click"),
-                    tags$td("Click or search for a country; change the map colours; jump to neighbours")),
+                    tags$td("A world map and a profile of the country you click. Choose Overall risk or any single hazard or weakness: the profile then explains that score, with the facts and recorded events behind it"),
+                    tags$td("Click or search for a country; choose what to colour the map by; click a part of a score to see it; jump to neighbours")),
             tags$tr(tags$td(b_("Help")), tags$td("How does it work?"), tags$td("This page"), tags$td("Reopen the tour; copy the links"))))),
 
       help_section("controls", "hand-pointer", "Buttons and controls",
@@ -165,7 +165,9 @@ register_view(
             c("Lack of reliability", "INFORM's own score from 0 to 10 for how weak a country's data are (missing, old or estimated)."),
             c("Blind spot", "A high-risk country whose data are weak, so its score should be checked on the ground."),
             c("Lee's L", "A number that measures whether two things (here, danger and vulnerability) are high in the same places and their neighbours."),
-            c("Double burden", "Countries in the top third for both danger and vulnerability.")),
+            c("Double burden", "Countries in the top third for both danger and vulnerability."),
+            c("Level compared with other countries", "On Explore, a single score is called Very low, Low, Medium, High or Very high by where it falls in the ranking of all countries (each fifth of the ranking is one level). Overall risk uses INFORM's own risk classes."),
+            c("Measured facts", "The real-world figures INFORM builds each score from, for example the number of people expected to be exposed to river floods each year, or people affected by disasters in each of the last three years.")),
             function(w) div(class = "gl-item", b_(w[1]), span(w[2]))))),
 
       help_section("problems", "life-ring", "If something goes wrong",

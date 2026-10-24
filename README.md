@@ -34,7 +34,7 @@ A dashboard that follows one chain of analysis about disaster risk in 191 countr
 | 3 Explain | Why | What explains risk, and does geography still matter? | Regression on wealth, Lagrange multiplier tests, spatial error model | Wealth and risk by continent (click points to label countries), map of what wealth does not explain, the steps of model choice, model table |
 | 4 Test | How sure | Can we trust the results? | Monte Carlo uncertainty, reliability adjustment, robustness checks | 90% ranges for the 30 highest-risk countries, blind spots, clustering under four versions of the data |
 | 5 Decide | Where to act | Where should action come first? | Bivariate classes and Lee's L | Map where danger meets vulnerability for any of 12 hazards, countries by region, what helps at national level |
-| | Explore | What about one country? | Profile | Click a country for its profile, trend, hazards, weak points, national-level recommendations and key facts |
+| | Explore | What about one country? | Profile and explanation | Click a country for its profile. "Colour countries by" sets what the profile explains: Overall risk, or any single hazard or weakness. For that score it shows the level compared with other countries, a plain "why this rating", what the score is made of (click a part to drill down), the measured facts behind it (for example people exposed to floods each year), recorded events (people affected by disasters in each of the last three years, drought history, the strongest earthquakes on record, displacement, conflict), and where it fits in the overall score |
 | | Help | How does it work? | | How to open the app (web, R, download), three ways to use it, every page and control, the words used, quick fixes |
 
 The five step tabs in the top bar are numbered 1 to 5, and under every page title a "How to use this page" line says what to click. Every page opens with a one-sentence answer computed from the data. Method details are in the collapsed "Method and interpretation" box at the bottom of each page.
@@ -112,6 +112,8 @@ The processed data is in `data/`, so the app runs immediately. The background ma
 | Dataset | Source |
 |---|---|
 | INFORM Risk Mid-2026 (v0.7.3) and trend 2017-2026 | European Commission Joint Research Centre |
+| Indicator data behind each score (people exposed, affected, displaced, and so on) | INFORM Risk Mid-2026, sheet "Indicator Data" (compiled by the EC JRC from GEM, UNDRR, EM-DAT, FAO, WHO, UNHCR, IDMC, UNDP, World Bank and others) |
+| Significant earthquakes, magnitude 5.5 and stronger, 1965-2016 | US Geological Survey |
 | GDP and energy | Our World in Data |
 | Country boundaries 1:50m | Natural Earth |
 
@@ -122,9 +124,10 @@ app.R             top bar and navigation
 R/core/           colours, cards, downloads, maps, data store, page registry
 R/analysis/       statistics as plain R functions (no Shiny)
 docs/             system architecture, app logic and wireframes
-scripts/          prepare_data.R (raw to data/), precompute_results.R (all results)
+scripts/          prepare_data.R (raw to data/), prepare_indicators.R (indicator facts and earthquakes), precompute_results.R (all results)
 R/views/          one file per page: 00_overview, 01_data, 02_where, 03_why, 04_sure, 05_act, 06_explore, 07_help
 R/core/variables.R       the variable dictionary and continent lookup
+R/analysis/explain.R     why a country gets each score: facts, parts, recorded events
 R/analysis/figures.R     publication figures and descriptive statistics (used on screen and for export)
 www/              styles and navigation script
 data/             processed data
