@@ -15,6 +15,38 @@ BASEMAPS <- c(
 )
 PLACE_NAMES <- "Place names"
 
+# Zoom buttons and a full-screen button, top right under the layer switcher.
+# Full screen enlarges the whole map card (title, legend and download menu
+# included); on the Explore page it enlarges the map together with the
+# country panel. Press Esc or the button again to return.
+MAP_CONTROLS_JS <- "function(el, x) {
+  var map = this;
+  L.control.zoom({position: 'topright'}).addTo(map);
+  var Full = L.Control.extend({ options: { position: 'topright' }, onAdd: function () {
+    var box = L.DomUtil.create('div', 'leaflet-bar gr-full');
+    var a = L.DomUtil.create('a', '', box); a.href = '#'; a.title = 'Full screen (Esc to leave)'; a.setAttribute('role', 'button');
+    a.innerHTML = '<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\"><path d=\"M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>';
+    L.DomEvent.disableClickPropagation(box);
+    L.DomEvent.on(a, 'click', function (e) {
+      L.DomEvent.preventDefault(e);
+      var target = el.closest('.explore-grid') || el.closest('.gr-card') || el;
+      if (document.fullscreenElement || document.webkitFullscreenElement) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+      else { var req = target.requestFullscreen || target.webkitRequestFullscreen; if (req) req.call(target); }
+    });
+    return box; } });
+  new Full().addTo(map);
+  var saved = null;
+  var fix = function () { setTimeout(function () {
+    var full = document.fullscreenElement || document.webkitFullscreenElement;
+    var mine = full && full.contains(el);
+    map.invalidateSize();
+    if (mine && !saved) { saved = { c: map.getCenter(), z: map.getZoom() };
+      if (map.getZoom() < 3) map.fitBounds([[-56, -168], [74, 180]], { animate: false }); }
+    else if (!mine && saved) { map.setView(saved.c, saved.z, { animate: false }); saved = null; }
+  }, 250); };
+  document.addEventListener('fullscreenchange', fix); document.addEventListener('webkitfullscreenchange', fix);
+}"
+
 leaflet_basemaps <- function(minZoom = 1) {
   m <- leaflet::leaflet(options = leaflet::leafletOptions(minZoom = minZoom, worldCopyJump = TRUE, zoomSnap = 0.25,
                                                           zoomControl = FALSE, attributionControl = TRUE))
@@ -27,7 +59,7 @@ leaflet_basemaps <- function(minZoom = 1) {
   m <- leaflet::addLayersControl(m, baseGroups = names(BASEMAPS), overlayGroups = PLACE_NAMES, position = "topright",
                                  options = leaflet::layersControlOptions(collapsed = TRUE))
   # Zoom buttons top right under the layer switcher; the legend gets the bottom left to itself.
-  m <- htmlwidgets::onRender(m, "function(el, x) { L.control.zoom({position: 'topright'}).addTo(this); }")
+  m <- htmlwidgets::onRender(m, MAP_CONTROLS_JS)
   leaflet::addScaleBar(m, "bottomright", options = leaflet::scaleBarOptions(imperial = FALSE))
 }
 
@@ -51,7 +83,7 @@ leaflet_choropleth <- function(store, values, var, title, label_extra = NULL, vi
                          highlightOptions = leaflet::highlightOptions(weight = 2, color = GR$ink, bringToFront = TRUE))
   legend_vals <- if (is.numeric(values)) values else factor(levels(values), levels = levels(values))
   leaflet::addLegend(m, "bottomleft", pal = pal, values = legend_vals, title = title, opacity = 0.95,
-                     na.label = "No data", layerId = "legend")
+                     na.label = "No data", layerId = "legend", bins = 5)
 }
 
 # Static map for downloads. fill_type: "inform" (0-10 scale), "continuous",
@@ -105,7 +137,7 @@ add_style_legend <- function(m, st) {
   if (!is.null(st$legend_html))
     return(leaflet::addControl(m, htmltools::HTML(st$legend_html), position = "bottomleft", className = "info legend", layerId = "legend"))
   leaflet::addLegend(m, "bottomleft", pal = st$legend$pal, values = st$legend$values, title = st$legend$title,
-                     opacity = 0.95, na.label = "No data", layerId = "legend")
+                     opacity = 0.95, na.label = "No data", layerId = "legend", bins = 5)
 }
 
 draw_styled_map <- function(store, st, view = c(15, 20, 1.6)) {

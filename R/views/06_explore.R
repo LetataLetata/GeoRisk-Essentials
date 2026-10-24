@@ -65,7 +65,7 @@ register_view(
                                highlightOptions = leaflet::highlightOptions(weight = 2.5, color = "#111827", fillOpacity = min(1, opacity + 0.2),
                                                                             bringToFront = FALSE)) |>
           leaflet::removeControl("legend")
-        if (!is.null(f$pal)) m <- leaflet::addLegend(m, "bottomleft", pal = f$pal, values = f$values, title = f$title,
+        if (!is.null(f$pal)) m <- leaflet::addLegend(m, "bottomleft", pal = f$pal, values = f$values, title = f$title, bins = 5,
                                                      opacity = 0.95, layerId = "legend")
         m
       }
@@ -103,7 +103,7 @@ register_view(
                          if (is.numeric(v)) fmt_num(v, 2) else as.character(v))
           session$sendCustomMessage("gr-restyle", list(id = session$ns("map"), ids = sfd$iso3, fill = f$cols, labels = lab))
           leaflet::leafletProxy("map") |> leaflet::removeControl("legend") |>
-            leaflet::addLegend("bottomleft", pal = f$pal, values = f$values, title = f$title, opacity = 0.95, layerId = "legend")
+            leaflet::addLegend("bottomleft", pal = f$pal, values = f$values, title = f$title, opacity = 0.95, layerId = "legend", bins = 5)
         } else {
           leaflet::leafletProxy("map") |> draw_countries(input$colour, input$opacity) |> draw_selected(sel())
         }

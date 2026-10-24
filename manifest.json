@@ -3336,7 +3336,7 @@
       "checksum": "0e48add90ff414b04bbc226b6c281442"
     },
     "R/analysis/country_facts.R": {
-      "checksum": "8f19cff3e8e7a59638f710bd473cccb0"
+      "checksum": "25cc95fe17d5bbdffbf8e8e6f6b8ec50"
     },
     "R/analysis/figures.R": {
       "checksum": "b691b146ff713008da60dbf03b399999"
@@ -3357,13 +3357,13 @@
       "checksum": "6b8102730d6e20fcb562ba2991104ce1"
     },
     "R/core/cache.R": {
-      "checksum": "a54d1efdf011d4fa1bacb2d33247ceb7"
+      "checksum": "91e72ad554ae6fe570fe3a1e60c99883"
     },
     "R/core/components.R": {
       "checksum": "3c1aa5906acc7b738f5a4b2ff3ba2293"
     },
     "R/core/maps.R": {
-      "checksum": "1943161b22fe0d968518732266da57d1"
+      "checksum": "277fec7bf6bb788be41d5afbbfdd069c"
     },
     "R/core/registry.R": {
       "checksum": "8937e9da10260dc48d191593c76bb230"
@@ -3378,7 +3378,7 @@
       "checksum": "c64272fe3afc208293afa5ea2cc320f4"
     },
     "R/views/00_overview.R": {
-      "checksum": "0bf8e40197335cfe9abb9413f649e949"
+      "checksum": "d74701eed1d8b84f8bbe785784557222"
     },
     "R/views/01_data.R": {
       "checksum": "0f039d46781422697b4cba2d9a5d79f2"
@@ -3396,13 +3396,13 @@
       "checksum": "6b588739fdb79155ff0f5fb510baa9d0"
     },
     "R/views/06_explore.R": {
-      "checksum": "6e59168e1c693bee67291df767967668"
+      "checksum": "84aafeb7537512cb42b9ded4f50dfc0b"
     },
     "README.md": {
-      "checksum": "c647145b7324decb3259a2913726a55b"
+      "checksum": "0560f2c97488fa9c726815ed282c12da"
     },
     "app.R": {
-      "checksum": "fc25e1c8a177837f6aa16ac618af5421"
+      "checksum": "073abdc87e14e0037bc47e42f7c015a8"
     },
     "data/geography.rds": {
       "checksum": "22906f90ff76901e5e84944c19f410cd"
@@ -3422,14 +3422,38 @@
     "data/owid_energy.rds": {
       "checksum": "f25fdb04b979acc22b3e28b85af816c8"
     },
+    "data/results_cache.rds": {
+      "checksum": "a9161a733e62e5cd3c89901b7af269e3"
+    },
+    "docs/README.md": {
+      "checksum": "e29c3d3a43b0b9c3944589f65716b9e9"
+    },
+    "docs/architecture.html": {
+      "checksum": "7fbd6f0ef20b91988a41dd6556040454"
+    },
+    "docs/img/01_idea.png": {
+      "checksum": "78910f3df862beeb9a8437c3ae983cb0"
+    },
+    "docs/img/02_system_architecture.png": {
+      "checksum": "20d061fb997b829eab9bc4a70dcc2c0a"
+    },
+    "docs/img/03_app_logic.png": {
+      "checksum": "a38a4bddc1342133c8ac86b3c8ab0ce6"
+    },
+    "docs/img/04_wireframes.png": {
+      "checksum": "d8a4ee934356df49c4f1877775df73fe"
+    },
+    "scripts/precompute_results.R": {
+      "checksum": "5e31f7761551cc91abf1941ce8dde9cd"
+    },
     "scripts/prepare_data.R": {
-      "checksum": "9680a9e0558eeed95d8f81847ff157cd"
+      "checksum": "840680b8db5349a59b68605a52c12edf"
     },
     "www/app.js": {
       "checksum": "fc05d06dfcde59fae366501da9576450"
     },
     "www/styles.css": {
-      "checksum": "80d6f55382adbc59d0ee656bd263897d"
+      "checksum": "751cc0f7208bfbb817340cef93646ebe"
     }
   },
   "users": null

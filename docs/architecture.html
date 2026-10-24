@@ -1,0 +1,325 @@
+<title>GEORISK Observatory Blueprint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column; each diagram in its own scrollable panel, in the order idea, architecture, logic, wireframes. */
+:root {
+  --bg: #EEF4F1; --panel: #FFFFFF; --ink: #10231C; --text: #33453E; --muted: #6A7C75; --line: #D3E0DA;
+  --forest: #0F3D2E; --leaf: #16A34A; --mint: #DCF5E5; --sky: #DBEAFE; --skyink: #1D4ED8; --sand: #FEF3C7; --sandink: #92400E;
+  --rose: #FDE2E2; --roseink: #B91C1C; --wire: #F6F9F7; --wireline: #B8C9C1;
+  --display: "Space Grotesk", "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0D1714; --panel: #14221D; --ink: #E7F2EC; --text: #C3D3CC; --muted: #8FA59C; --line: #2A3D35;
+  --forest: #86EFAC; --leaf: #4ADE80; --mint: #173A2A; --sky: #172A47; --skyink: #93C5FD; --sand: #3A2E12; --sandink: #FCD34D;
+  --rose: #3D1A1A; --roseink: #FCA5A5; --wire: #18281F; --wireline: #3B5247; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0D1714; --panel: #14221D; --ink: #E7F2EC; --text: #C3D3CC; --muted: #8FA59C; --line: #2A3D35;
+  --forest: #86EFAC; --leaf: #4ADE80; --mint: #173A2A; --sky: #172A47; --skyink: #93C5FD; --sand: #3A2E12; --sandink: #FCD34D;
+  --rose: #3D1A1A; --roseink: #FCA5A5; --wire: #18281F; --wireline: #3B5247; color-scheme: dark }
+
+body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 15.5px; line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 36px 60px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); color: var(--ink); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.1; }
+h2 { font-size: 1.45rem; }
+h3 { font-size: 1.02rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--leaf); font-weight: 600; }
+header.intro { display: grid; gap: 12px; }
+.lead { font-size: 1.08rem; color: var(--text); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fact { font-family: var(--mono); font-size: 0.78rem; background: var(--mint); color: var(--forest); padding: 4px 10px; border-radius: 6px; }
+section { display: grid; gap: 14px; }
+.sec-head { display: grid; gap: 6px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-width: 0; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; min-width: 980px; width: 100%; height: auto; }
+.legend-row { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: var(--muted); }
+.legend-row span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--c); border: 1px solid var(--line); }
+.steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.step { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 4px; align-content: start; background: var(--panel); }
+.step b { font-family: var(--mono); font-size: 0.72rem; color: var(--leaf); letter-spacing: 0.06em; text-transform: uppercase; }
+.step strong { color: var(--ink); font-size: 0.95rem; line-height: 1.3; }
+.step small { color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+@media (max-width: 860px) { .steps { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+
+/* SVG diagram styles, all from the tokens */
+svg text { font-family: var(--body); fill: var(--text); }
+svg .t-title { font-family: var(--display); font-weight: 700; fill: var(--ink); font-size: 15px; }
+svg .t-head { font-weight: 600; fill: var(--ink); font-size: 13px; }
+svg .t-small { font-size: 11.5px; fill: var(--muted); }
+svg .t-mono { font-family: var(--mono); font-size: 11px; fill: var(--text); }
+svg .lane { fill: var(--wire); stroke: var(--line); }
+svg .box { fill: var(--panel); stroke: var(--wireline); stroke-width: 1.2; }
+svg .box-data { fill: var(--sky); stroke: var(--skyink); stroke-opacity: 0.35; }
+svg .box-core { fill: var(--mint); stroke: var(--leaf); stroke-opacity: 0.45; }
+svg .box-view { fill: var(--sand); stroke: var(--sandink); stroke-opacity: 0.35; }
+svg .box-out { fill: var(--rose); stroke: var(--roseink); stroke-opacity: 0.35; }
+svg .arrow { stroke: var(--muted); stroke-width: 1.6; fill: none; marker-end: url(#ah); }
+svg .arrow-dash { stroke: var(--muted); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; marker-end: url(#ah); }
+svg .ahead { fill: var(--muted); }
+svg .dec { fill: var(--sand); stroke: var(--sandink); stroke-opacity: 0.5; }
+svg .yes { fill: var(--leaf); font-weight: 600; font-size: 11px; }
+svg .no { fill: var(--roseink); font-weight: 600; font-size: 11px; }
+
+/* Wireframes */
+.wires { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) { .wires { grid-template-columns: 1fr; } }
+.wire { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.wire h3 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.wire h3 small { font-family: var(--mono); font-weight: 400; font-size: 0.72rem; color: var(--muted); }
+.screen { border: 1.5px solid var(--wireline); border-radius: 10px; background: var(--wire); padding: 8px; display: grid; gap: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+.w { border: 1.2px dashed var(--wireline); border-radius: 6px; padding: 6px 8px; display: flex; align-items: center; justify-content: center; text-align: center; min-height: 26px; line-height: 1.3; }
+.w.solid { border-style: solid; background: var(--panel); }
+.w.dark { background: var(--forest); color: var(--bg); border-color: var(--forest); }
+.w.left { justify-content: flex-start; text-align: left; }
+.row { display: grid; gap: 6px; }
+.r2 { grid-template-columns: 1.6fr 1fr; } .r4 { grid-template-columns: repeat(4, 1fr); } .r5 { grid-template-columns: repeat(5, 1fr); } .r3 { grid-template-columns: 1fr 1fr 1fr; }
+.rbar { grid-template-columns: 1.1fr 3fr 1.2fr; }
+.tall { min-height: 120px; } .mid { min-height: 64px; } .huge { min-height: 230px; }
+.note { font-size: 0.86rem; color: var(--muted); }
+ol.flow { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 75ch; }
+ol.flow li::marker { color: var(--leaf); font-weight: 700; }
+footer { font-size: 0.82rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+code { font-family: var(--mono); font-size: 0.88em; background: var(--wire); padding: 1px 5px; border-radius: 4px; }
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <div class="eyebrow">GEORISK Observatory &middot; how the app is built</div>
+    <h1>From open data to a decision, in five steps</h1>
+    <p class="lead">GEORISK Observatory is an R Shiny dashboard that applies spatial statistics to the INFORM Risk Index for 191 countries. It is built around one chain of questions: what is in the data, where risk is concentrated, what explains it, how sure we can be, and where action should come first.</p>
+    <div class="facts">
+      <span class="fact">191 countries</span><span class="fact">41 variables</span><span class="fact">INFORM Risk 2026</span><span class="fact">5 nearest-neighbour weights</span><span class="fact">7 pages</span><span class="fact">12 report figures</span>
+    </div>
+  </header>
+
+  <section id="idea">
+    <div class="sec-head"><div class="eyebrow">1 &middot; The idea</div><h2>One question per step, each feeding the next</h2>
+      <p>Every step page opens with a one-sentence answer computed from the data, shows one main figure, and ends with a button to the next step. Explore lets anyone click a single country.</p></div>
+    <div class="steps">
+      <div class="step"><b>Step 1 &middot; Describe</b><strong>What is in the data?</strong><small>Descriptive statistics, distributions, Spearman correlations by continent</small></div>
+      <div class="step"><b>Step 2 &middot; Locate</b><strong>Where is risk concentrated?</strong><small>Global and local Moran's I for any of 33 INFORM variables</small></div>
+      <div class="step"><b>Step 3 &middot; Explain</b><strong>What explains it?</strong><small>Regression on wealth, Lagrange multiplier tests, spatial error model</small></div>
+      <div class="step"><b>Step 4 &middot; Test</b><strong>How sure can we be?</strong><small>Monte Carlo uncertainty, reliability adjustment, robustness</small></div>
+      <div class="step"><b>Step 5 &middot; Decide</b><strong>Where should action come first?</strong><small>Danger meets vulnerability: bivariate classes and Lee's L</small></div>
+    </div>
+  </section>
+
+  <section id="architecture">
+    <div class="sec-head"><div class="eyebrow">2 &middot; System architecture</div><h2>Five layers, each replaceable on its own</h2>
+      <p>Raw data is prepared once into compact files. Plain R functions do the statistics, a cache keeps every result, and each page is an independent module, so a broken page never takes the others down.</p></div>
+    <div class="panel scroll">
+      <svg viewBox="0 0 1160 640" role="img" aria-labelledby="archT archD">
+        <title id="archT">System architecture of GEORISK Observatory</title>
+        <desc id="archD">Data sources feed preparation scripts, which write data files; the app core loads them, runs analysis functions through a cache, and page modules render maps and charts in the browser; outputs are downloads; the code is published on GitHub for the R link and the web link.</desc>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <!-- lanes -->
+        <rect class="lane" x="10" y="10" width="200" height="520" rx="12"/>
+        <rect class="lane" x="230" y="10" width="200" height="520" rx="12"/>
+        <rect class="lane" x="450" y="10" width="250" height="520" rx="12"/>
+        <rect class="lane" x="720" y="10" width="210" height="520" rx="12"/>
+        <rect class="lane" x="950" y="10" width="200" height="520" rx="12"/>
+        <text class="t-title" x="24" y="38">Data sources</text>
+        <text class="t-title" x="244" y="38">Preparation</text>
+        <text class="t-title" x="464" y="38">App core (R)</text>
+        <text class="t-title" x="734" y="38">Pages (Shiny modules)</text>
+        <text class="t-title" x="964" y="38">Browser and outputs</text>
+
+        <!-- sources -->
+        <rect class="box box-data" x="24" y="56" width="172" height="66" rx="8"/>
+        <text class="t-head" x="36" y="78">INFORM Risk 2026</text><text class="t-small" x="36" y="96">and trend 2017-2026</text><text class="t-small" x="36" y="112">EC Joint Research Centre</text>
+        <rect class="box box-data" x="24" y="134" width="172" height="50" rx="8"/>
+        <text class="t-head" x="36" y="156">Our World in Data</text><text class="t-small" x="36" y="173">GDP, energy</text>
+        <rect class="box box-data" x="24" y="196" width="172" height="50" rx="8"/>
+        <text class="t-head" x="36" y="218">Natural Earth</text><text class="t-small" x="36" y="235">country boundaries</text>
+        <rect class="box box-data" x="24" y="300" width="172" height="66" rx="8"/>
+        <text class="t-head" x="36" y="322">Live, when online</text><text class="t-small" x="36" y="340">REST Countries, Wikipedia</text><text class="t-small" x="36" y="356">(country facts on Explore)</text>
+        <rect class="box box-data" x="24" y="378" width="172" height="66" rx="8"/>
+        <text class="t-head" x="36" y="400">Free map tiles</text><text class="t-small" x="36" y="418">Esri satellite, CARTO,</text><text class="t-small" x="36" y="434">OSM, OpenTopoMap</text>
+
+        <!-- preparation -->
+        <rect class="box" x="244" y="70" width="172" height="74" rx="8"/>
+        <text class="t-mono" x="256" y="92">prepare_data.R</text><text class="t-small" x="256" y="110">clean, harmonise,</text><text class="t-small" x="256" y="126">join to boundaries</text>
+        <rect class="box box-data" x="244" y="160" width="172" height="62" rx="8"/>
+        <text class="t-mono" x="256" y="182">data/*.rds</text><text class="t-small" x="256" y="200">6 compact files</text><text class="t-small" x="256" y="214">(read in 0.5 s)</text>
+        <rect class="box" x="244" y="250" width="172" height="74" rx="8"/>
+        <text class="t-mono" x="256" y="272">precompute_results.R</text><text class="t-small" x="256" y="290">every option, once</text><text class="t-small" x="256" y="306">(about 25 s)</text>
+        <rect class="box box-data" x="244" y="340" width="172" height="62" rx="8"/>
+        <text class="t-mono" x="256" y="362">results_cache.rds</text><text class="t-small" x="256" y="380">103 results, 0.7 MB</text><text class="t-small" x="256" y="394">checked against the data</text>
+
+        <!-- core -->
+        <rect class="box box-core" x="464" y="56" width="222" height="70" rx="8"/>
+        <text class="t-mono" x="476" y="78">store.R + variables.R</text><text class="t-small" x="476" y="96">load data, 41-variable dictionary,</text><text class="t-small" x="476" y="112">continent of each country</text>
+        <rect class="box box-core" x="464" y="140" width="222" height="70" rx="8"/>
+        <text class="t-mono" x="476" y="162">completeness.R</text><text class="t-small" x="476" y="180">keep countries with complete data,</text><text class="t-small" x="476" y="196">rebuild 5 nearest neighbours</text>
+        <rect class="box box-core" x="464" y="224" width="222" height="104" rx="8"/>
+        <text class="t-mono" x="476" y="246">analysis functions</text>
+        <text class="t-small" x="476" y="264">lattice.R: Moran's I, LISA, regression</text>
+        <text class="t-small" x="476" y="280">uncertainty.R, harmonise.R: Test</text>
+        <text class="t-small" x="476" y="296">burden.R: bivariate, Lee's L</text>
+        <text class="t-small" x="476" y="312">figures.R: publication figures</text>
+        <rect class="box box-core" x="464" y="342" width="222" height="62" rx="8"/>
+        <text class="t-mono" x="476" y="364">cache.R</text><text class="t-small" x="476" y="382">each result computed once,</text><text class="t-small" x="476" y="396">shared by every page and visitor</text>
+        <rect class="box" x="464" y="418" width="222" height="56" rx="8"/>
+        <text class="t-mono" x="476" y="440">registry.R</text><text class="t-small" x="476" y="458">pages load in isolation</text>
+
+        <!-- views -->
+        <rect class="box box-view" x="734" y="56" width="182" height="34" rx="8"/><text class="t-head" x="746" y="78">Overview</text>
+        <rect class="box box-view" x="734" y="98" width="182" height="34" rx="8"/><text class="t-head" x="746" y="120">1 Data</text>
+        <rect class="box box-view" x="734" y="140" width="182" height="34" rx="8"/><text class="t-head" x="746" y="162">2 Where</text>
+        <rect class="box box-view" x="734" y="182" width="182" height="34" rx="8"/><text class="t-head" x="746" y="204">3 Why</text>
+        <rect class="box box-view" x="734" y="224" width="182" height="34" rx="8"/><text class="t-head" x="746" y="246">4 How sure</text>
+        <rect class="box box-view" x="734" y="266" width="182" height="34" rx="8"/><text class="t-head" x="746" y="288">5 Where to act</text>
+        <rect class="box box-view" x="734" y="308" width="182" height="34" rx="8"/><text class="t-head" x="746" y="330">Explore</text>
+        <text class="t-small" x="734" y="370">Each: answer sentence, data note,</text>
+        <text class="t-small" x="734" y="386">main figure, method box, next step</text>
+
+        <!-- browser -->
+        <rect class="box" x="964" y="56" width="172" height="88" rx="8"/>
+        <text class="t-head" x="976" y="78">Interactive page</text><text class="t-small" x="976" y="96">leaflet maps (recoloured,</text><text class="t-small" x="976" y="112">full screen), plotly charts,</text><text class="t-small" x="976" y="128">tables, fold and compact</text>
+        <rect class="box box-out" x="964" y="160" width="172" height="70" rx="8"/>
+        <text class="t-head" x="976" y="182">Downloads</text><text class="t-small" x="976" y="200">PNG 300 dpi, PDF, SVG, CSV</text><text class="t-small" x="976" y="216">for every chart and map</text>
+        <rect class="box box-out" x="964" y="244" width="172" height="70" rx="8"/>
+        <text class="t-head" x="976" y="266">Report bundle</text><text class="t-small" x="976" y="284">12 numbered figures</text><text class="t-small" x="976" y="300">and 3 tables (zip)</text>
+
+        <!-- arrows -->
+        <path class="arrow" d="M196 89 H226 V100 H242"/>
+        <path class="arrow" d="M196 159 H226 V110 H242"/>
+        <path class="arrow" d="M196 221 H226 V120 H242"/>
+        <path class="arrow" d="M330 144 V158"/>
+        <path class="arrow" d="M330 222 V248"/>
+        <path class="arrow" d="M330 324 V338"/>
+        <path class="arrow" d="M416 191 H440 V91 H462"/>
+        <path class="arrow" d="M416 371 H462"/>
+        <path class="arrow" d="M575 126 V138"/>
+        <path class="arrow" d="M575 210 V222"/>
+        <path class="arrow" d="M575 328 V340"/>
+        <path class="arrow" d="M686 200 H712 V199 H732"/>
+        <path class="arrow" d="M916 100 H964"/>
+        <path class="arrow" d="M940 100 V195 H962"/>
+        <path class="arrow" d="M940 195 V279 H962"/>
+        <path class="arrow-dash" d="M196 333 H210 V500 H950 V140 H962"/>
+        <path class="arrow-dash" d="M196 411 H215 V492 H944 V120 H962"/>
+
+        <!-- deployment band -->
+        <rect class="lane" x="10" y="550" width="1140" height="80" rx="12"/>
+        <text class="t-title" x="24" y="576">Publishing</text>
+        <rect class="box" x="140" y="562" width="250" height="56" rx="8"/>
+        <text class="t-head" x="152" y="584">GitHub repository</text><text class="t-mono" x="152" y="602">LetataLetata/GeoRisk-Essentials</text>
+        <rect class="box" x="450" y="562" width="300" height="56" rx="8"/>
+        <text class="t-head" x="462" y="584">R link: runs on the user's computer</text><text class="t-mono" x="462" y="602">shiny::runGitHub(...)</text>
+        <rect class="box" x="800" y="562" width="300" height="56" rx="8"/>
+        <text class="t-head" x="812" y="584">Web link: Posit Connect Cloud</text><text class="t-small" x="812" y="602">reads manifest.json, no R needed</text>
+        <path class="arrow" d="M390 590 H448"/>
+        <path class="arrow" d="M750 590 H798"/>
+      </svg>
+    </div>
+    <div class="legend-row"><span style="--c: var(--sky)">data and stored files</span><span style="--c: var(--mint)">statistics and app core</span><span style="--c: var(--sand)">pages</span><span style="--c: var(--rose)">outputs</span><span style="--c: var(--panel)">scripts and services</span></div>
+  </section>
+
+  <section id="logic">
+    <div class="sec-head"><div class="eyebrow">3 &middot; App logic</div><h2>What happens when someone changes a setting</h2>
+      <p>The same path runs for every analysis, so missing data, neighbours and caching are handled the same way everywhere.</p></div>
+    <div class="panel scroll">
+      <svg viewBox="0 0 1160 470" role="img" aria-labelledby="logT logD">
+        <title id="logT">Request logic and the analysis chain</title>
+        <desc id="logD">A setting change leads to a check of the variables needed, filtering to complete countries, rebuilding neighbours, a cache lookup, computing if needed, and showing the answer, figure and data note. Below, the decision rules of each step.</desc>
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <style>.a2{stroke:var(--muted);stroke-width:1.6;fill:none;marker-end:url(#ah2)}</style>
+        <text class="t-title" x="10" y="26">Every request</text>
+        <rect class="box box-view" x="10" y="44" width="140" height="64" rx="8"/><text class="t-head" x="22" y="68">Choose a page</text><text class="t-small" x="22" y="86">or change a setting</text>
+        <rect class="box box-core" x="180" y="44" width="150" height="64" rx="8"/><text class="t-head" x="192" y="68">Which variables?</text><text class="t-small" x="192" y="86">e.g. outcome + GDP</text>
+        <rect class="box box-core" x="360" y="44" width="160" height="64" rx="8"/><text class="t-head" x="372" y="68">Keep complete</text><text class="t-small" x="372" y="86">countries; list the rest</text>
+        <rect class="box box-core" x="550" y="44" width="160" height="64" rx="8"/><text class="t-head" x="562" y="68">Rebuild neighbours</text><text class="t-small" x="562" y="86">5 nearest, symmetric</text>
+        <polygon class="dec" points="800,44 870,76 800,108 730,76"/><text class="t-head" x="800" y="72" text-anchor="middle">In cache?</text><text class="t-small" x="800" y="88" text-anchor="middle">(usually yes)</text>
+        <rect class="box box-core" x="760" y="140" width="160" height="56" rx="8"/><text class="t-head" x="772" y="162">Compute once</text><text class="t-small" x="772" y="180">and store the result</text>
+        <rect class="box box-out" x="900" y="44" width="250" height="64" rx="8"/><text class="t-head" x="912" y="66">Show: answer sentence,</text><text class="t-small" x="912" y="84">main figure, data note, recolour map</text><text class="t-small" x="912" y="99">(only colours are sent)</text>
+        <path class="a2" d="M150 76 H178"/><path class="a2" d="M330 76 H358"/><path class="a2" d="M520 76 H548"/><path class="a2" d="M710 76 H728"/>
+        <path class="a2" d="M870 76 H898"/><text class="yes" x="874" y="70">yes</text>
+        <path class="a2" d="M800 108 V138"/><text class="no" x="806" y="126">no</text>
+        <path class="a2" d="M920 168 H1010 V110"/>
+
+        <text class="t-title" x="10" y="246">The analysis chain and its decision rules</text>
+        <rect class="box" x="10" y="264" width="214" height="190" rx="10"/>
+        <text class="t-head" x="22" y="288">1 Describe</text>
+        <text class="t-small" x="22" y="308">n, missing, mean, SD, quartiles,</text><text class="t-small" x="22" y="324">skewness, Shapiro-Wilk</text>
+        <text class="t-small" x="22" y="348">Skewed? Use ranks:</text><text class="t-small" x="22" y="364">Spearman correlation</text>
+        <text class="t-small" x="22" y="388">Click a correlation cell:</text><text class="t-small" x="22" y="404">countries by continent</text>
+        <rect class="box" x="240" y="264" width="214" height="190" rx="10"/>
+        <text class="t-head" x="252" y="288">2 Locate</text>
+        <text class="t-small" x="252" y="308">Global Moran's I,</text><text class="t-small" x="252" y="324">999 permutations</text>
+        <text class="t-small" x="252" y="348">p &lt; 0.05? Clustered:</text><text class="t-small" x="252" y="364">local Moran's I clusters</text>
+        <text class="t-small" x="252" y="388">False discovery rate</text><text class="t-small" x="252" y="404">for 191 tests at once</text>
+        <rect class="box" x="470" y="264" width="214" height="190" rx="10"/>
+        <text class="t-head" x="482" y="288">3 Explain</text>
+        <text class="t-small" x="482" y="308">Ordinary regression on</text><text class="t-small" x="482" y="324">log GDP per person</text>
+        <text class="t-small" x="482" y="348">Residuals clustered?</text><text class="t-small" x="482" y="364">LM tests (Anselin rule):</text>
+        <text class="t-small" x="482" y="388">lag or error model;</text><text class="t-small" x="482" y="404">compare by AIC</text>
+        <rect class="box" x="700" y="264" width="214" height="190" rx="10"/>
+        <text class="t-head" x="712" y="288">4 Test</text>
+        <text class="t-small" x="712" y="308">1,000 simulations of data</text><text class="t-small" x="712" y="324">error by reliability</text>
+        <text class="t-small" x="712" y="348">Clustering recomputed on</text><text class="t-small" x="712" y="364">4 versions of the data</text>
+        <text class="t-small" x="712" y="388">High risk + weak data</text><text class="t-small" x="712" y="404">= blind spot</text>
+        <rect class="box" x="930" y="264" width="220" height="190" rx="10"/>
+        <text class="t-head" x="942" y="288">5 Decide</text>
+        <text class="t-small" x="942" y="308">Thirds of danger and of</text><text class="t-small" x="942" y="324">vulnerability: 9 classes</text>
+        <text class="t-small" x="942" y="348">Top third on both</text><text class="t-small" x="942" y="364">= double burden</text>
+        <text class="t-small" x="942" y="388">Lee's L: do they cluster</text><text class="t-small" x="942" y="404">together? National actions</text>
+        <path class="a2" d="M224 359 H238"/><path class="a2" d="M454 359 H468"/><path class="a2" d="M684 359 H698"/><path class="a2" d="M914 359 H928"/>
+      </svg>
+    </div>
+    <ol class="flow">
+      <li><strong>Missing data first.</strong> Each analysis lists the variables it needs; countries without all of them are left out, shown grey on the maps and named under the answer.</li>
+      <li><strong>Neighbours fit the countries analysed.</strong> The five nearest neighbours are rebuilt for exactly those countries, so a missing country is never anyone's neighbour.</li>
+      <li><strong>Computed once.</strong> Results are stored and shared; for the presentation every option is precomputed, so changing a setting only redraws.</li>
+      <li><strong>Maps are recoloured, not rebuilt.</strong> Country shapes are sent once; later only colours, labels and the legend change.</li>
+    </ol>
+  </section>
+
+  <section id="wireframes">
+    <div class="sec-head"><div class="eyebrow">4 &middot; Wireframes</div><h2>Four screen layouts carry the whole app</h2>
+      <p>Every step page uses the same template, so a reader learns the layout once. Panels fold, the top bar has Fold all, Unfold and Compact, and every map can fill the screen.</p></div>
+    <div class="wires">
+      <div class="wire"><h3>Overview <small>landing page</small></h3>
+        <div class="screen">
+          <div class="row rbar"><div class="w solid">GEORISK Observatory</div><div class="w solid">Overview | Data | Where | Why | How sure | Act | Explore</div><div class="w solid">Fold | Compact</div></div>
+          <div class="w dark mid">Question: where is risk highest, why, how sure?</div>
+          <div class="row r5"><div class="w">Step 1</div><div class="w">Step 2</div><div class="w">Step 3</div><div class="w">Step 4</div><div class="w">Step 5</div></div>
+          <div class="row r4"><div class="w solid mid">Where? 18 countries</div><div class="w solid mid">Why? 63%</div><div class="w solid mid">How sure? 10 blind spots</div><div class="w solid mid">Act? 2.06 billion</div></div>
+          <div class="w tall">World risk map (click a country: Explore)</div>
+          <div class="w">Download all figures and tables</div>
+        </div></div>
+      <div class="wire"><h3>Step page <small>template for steps 1 to 5</small></h3>
+        <div class="screen">
+          <div class="row rbar"><div class="w solid">GEORISK Observatory</div><div class="w solid">page buttons</div><div class="w solid">layout</div></div>
+          <div class="w left">1 Describe &gt; 2 Locate &gt; 3 Explain &gt; 4 Test &gt; 5 Decide</div>
+          <div class="row r2"><div class="w left">Step n: question as title</div><div class="w">Setting (e.g. indicator)</div></div>
+          <div class="w dark">The answer: one sentence with the key number</div>
+          <div class="w left">Data note: n of 191 countries; excluded list</div>
+          <div class="row r2"><div class="w solid tall">Main figure or map [full screen]</div><div class="w solid tall">Supporting chart or list</div></div>
+          <div class="row r2"><div class="w">Method and interpretation (folded)</div><div class="w dark">Next: step n+1</div></div>
+        </div></div>
+      <div class="wire"><h3>Explore <small>one country at a time</small></h3>
+        <div class="screen">
+          <div class="row rbar"><div class="w solid">GEORISK Observatory</div><div class="w solid">page buttons</div><div class="w solid">layout</div></div>
+          <div class="row r3"><div class="w">Find a country</div><div class="w">Colour by</div><div class="w">Colour strength</div></div>
+          <div class="row r2"><div class="w solid huge">Satellite map: click a country [layers, zoom, full screen, legend]</div>
+            <div class="row"><div class="w solid">Flag, name, risk score and class</div><div class="w">Three parts of risk vs world median</div><div class="w">Trend since 2017</div><div class="w">Hazards, weak points</div><div class="w">What helps (national level)</div><div class="w">Key facts, neighbours</div></div></div>
+        </div></div>
+      <div class="wire"><h3>Full-screen map <small>for presenting</small></h3>
+        <div class="screen">
+          <div class="row r2"><div class="w left">Map title and caption</div><div class="w">Download | Fold</div></div>
+          <div class="w solid huge" style="min-height: 280px; position: relative;">Map fills the screen; world view zooms to fit<br>Layers, zoom and exit buttons top right<br>Legend bottom left, scale bottom right</div>
+          <div class="note">Press Esc or the button again to return to the page.</div>
+        </div></div>
+    </div>
+  </section>
+
+  <footer>Data: INFORM Risk Index Mid-2026 and trend 2017-2026 (European Commission Joint Research Centre); Our World in Data; Natural Earth. Code: <code>github.com/LetataLetata/GeoRisk-Essentials</code>. Built with R, Shiny, bslib, leaflet, plotly, sf, spdep and spatialreg.</footer>
+</div>

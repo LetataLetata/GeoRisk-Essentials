@@ -1,15 +1,17 @@
-# GEORISK Observatory Lite
+# GEORISK Observatory
 
-A focused, five-step version of the GEORISK Observatory: spatial statistics of disaster risk for 191 countries (INFORM Risk Index 2026), built in R Shiny.
+A five-step dashboard: spatial statistics of disaster risk for 191 countries (INFORM Risk Index 2026), built in R Shiny.
 
 **Open the app**
 
-- **On the web (no R needed):** WEB_LINK_PENDING
+- **On the web (no R needed):** being set up on Posit Connect Cloud; the link will appear here.
 - **From R or RStudio** (runs on your own computer; install the packages listed under "Run it" first):
 
 ```r
 shiny::runGitHub("GeoRisk-Essentials", "LetataLetata")
 ```
+
+**How it is built:** system architecture, app logic and wireframes are in [docs/](docs/README.md).
 
 A dashboard that follows one chain of analysis about disaster risk in 191 countries, in five steps. Each step answers one question and feeds the next; every step page shows where it sits in the chain and ends with a button to the next step.
 
@@ -68,6 +70,10 @@ Before each analysis runs, the countries are checked for every variable that ana
 
 Every map opens on the satellite background (Esri World Imagery). The layer button (top right) switches to Light (CARTO), Streets (OpenStreetMap), Terrain (OpenTopoMap) or Dark (CARTO), and has a "Place names" layer that is off by default: tick it to show names above the coloured countries. None needs a key; they need an internet connection. Offline, the coloured countries still show on a plain background. Zoom buttons are under the layer button, the legend at bottom left and the scale bar at bottom right.
 
+## Presenting
+
+Every map has a full-screen button (top right, under the zoom buttons); press Esc to return. All results are precomputed in `data/results_cache.rds`, so changing a setting only redraws the page. After changing the data or the analysis code, run `Rscript scripts/precompute_results.R` once to refresh them (if you don't, the app notices the change and computes results on first use instead).
+
 ## Run it
 
 To run straight from GitHub, use the `shiny::runGitHub()` line at the top of this page. To run a downloaded copy:
@@ -103,6 +109,8 @@ The processed data is in `data/`, so the app runs immediately. The background ma
 app.R             top bar and navigation
 R/core/           colours, cards, downloads, maps, data store, page registry
 R/analysis/       statistics as plain R functions (no Shiny)
+docs/             system architecture, app logic and wireframes
+scripts/          prepare_data.R (raw to data/), precompute_results.R (all results)
 R/views/          one file per page: 00_overview, 01_data, 02_where, 03_why, 04_sure, 05_act, 06_explore
 R/core/variables.R       the variable dictionary and continent lookup
 R/analysis/figures.R     publication figures and descriptive statistics (used on screen and for export)

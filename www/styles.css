@@ -1,4 +1,4 @@
-/* GEORISK Observatory Lite visual identity.
+/* GEORISK Observatory visual identity.
    Inspired by clean environmental dashboards: frosted glass cards over a
    soft sky-to-field gradient, black active pills, green and amber accents. */
 
@@ -392,7 +392,7 @@ body {
 .selectize-input, .form-control { background: rgba(255, 255, 255, 0.75) !important; }
 table.dataTable, table.dataTable tbody tr { background: transparent !important; }
 .footer { color: var(--muted); }
-/* Brand: GEORISK Observatory Lite */
+/* Brand: GEORISK Observatory */
 .brand-name { letter-spacing: 0.02em; }
 .brand-accent { font-weight: 600; }
 .brand-lite { margin-left: 8px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
@@ -400,3 +400,18 @@ table.dataTable, table.dataTable tbody tr { background: transparent !important; 
   padding: 3px 8px; border-radius: 999px; vertical-align: middle; }
 .gr-pill.active, .gr-pill.active:hover { background: var(--ink); color: #fff; }
 .chart-card .shiny-plot-output img { border-radius: 12px; }
+
+/* Legend: put the "No data" entry below the colour bar, not beside it. */
+.info.legend > br + div { clear: both; padding-top: 6px; }
+.info.legend svg text { font-size: 11px; }
+/* Credits: one short line; full text on hover. */
+.leaflet-control-attribution { max-width: 48%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.leaflet-control-attribution:hover { max-width: 92%; white-space: normal; }
+/* Full-screen maps */
+.gr-full a { display: grid !important; place-items: center; }
+.gr-card:fullscreen, .gr-card:-webkit-full-screen { width: 100vw; height: 100vh; margin: 0; border-radius: 0; padding: 14px 18px;
+  display: flex; flex-direction: column; background: linear-gradient(160deg, #E6F0F5, #E7F2EC); }
+.gr-card:fullscreen .html-widget.leaflet, .gr-card:-webkit-full-screen .html-widget.leaflet { flex: 1; height: auto !important; min-height: 0; }
+.explore-grid:fullscreen, .explore-grid:-webkit-full-screen { width: 100vw; height: 100vh !important; padding: 12px; gap: 12px;
+  background: linear-gradient(160deg, #E6F0F5, #E7F2EC); grid-template-columns: minmax(0, 1fr) 420px; }
+.explore-grid:fullscreen .explore-map, .explore-grid:fullscreen .explore-panel { height: 100%; }

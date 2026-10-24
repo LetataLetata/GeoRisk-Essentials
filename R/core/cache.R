@@ -26,10 +26,37 @@ moran_all_variables <- function(store, groups = c("Risk and its three parts", "H
   }))
 }
 
-# Run once when the app starts, so the first visitor does not wait for the
-# default results of each page. Later settings are cached on first use.
-warm_cache <- function(store) {
+# ----------------------------------------------------- results on disk --
+# scripts/precompute_results.R saves every result in this file; the app loads
+# it at start-up. A fingerprint of the data files makes sure old results are
+# never used with new data.
+RESULTS_FILE <- file.path("data", "results_cache.rds")
+RESULT_KEYS <- "^(gm|lisa|fit|lee|where|sure):"
+
+data_fingerprint <- function(dir = "data") {
+  f <- sort(setdiff(list.files(dir, pattern = "\\.rds$", full.names = TRUE), RESULTS_FILE))
+  unname(tools::md5sum(f))
+}
+
+save_results_cache <- function(store, file = RESULTS_FILE) {
+  keys <- grep(RESULT_KEYS, ls(APP_CACHE), value = TRUE)
+  saveRDS(list(fingerprint = data_fingerprint(), created = Sys.time(), results = mget(keys, envir = APP_CACHE)), file, compress = "xz")
+  invisible(keys)
+}
+
+load_results_cache <- function(file = RESULTS_FILE) {
+  if (!file.exists(file)) return(0L)
+  x <- tryCatch(readRDS(file), error = function(e) NULL)
+  if (is.null(x) || !identical(x$fingerprint, data_fingerprint())) { message("Saved results do not match the data; they will be recomputed."); return(0L) }
+  for (k in names(x$results)) assign(k, x$results[[k]], envir = APP_CACHE)
+  length(x$results)
+}
+
+# Run once when the app starts: load the saved results, then make sure the
+# default result of each page exists, so the first visitor does not wait.
+warm_cache <- function(store, use_file = TRUE) {
   t0 <- Sys.time()
+  n_loaded <- if (use_file) load_results_cache() else 0L
   ok <- tryCatch({
     cw <- cached_check(store, "inform_risk", "INFORM Risk")
     cached("gm:inform_risk", global_moran(cw$data$inform_risk, cw$w$lw, 999))
@@ -45,6 +72,6 @@ warm_cache <- function(store) {
     cached("lee:hazard_and_exposure", lee_test(ca$data$hazard_and_exposure, ca$data$vulnerability, ca$w$lw))
     TRUE
   }, error = function(e) { message("Cache warm-up skipped: ", conditionMessage(e)); FALSE })
-  if (ok) message(sprintf("Results prepared in %.1f seconds.", as.numeric(Sys.time() - t0, units = "secs")))
+  if (ok) message(sprintf("Results ready in %.1f seconds (%d loaded from %s).", as.numeric(Sys.time() - t0, units = "secs"), n_loaded, RESULTS_FILE))
   invisible(ok)
 }

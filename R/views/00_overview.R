@@ -85,9 +85,9 @@ register_view(
                                                  caption = "Each step answers one question with the method shown; its output feeds the next step."), f, "png", 10, 3.6))
 
       output$figs <- downloadHandler(
-        function() paste0("GEORISK_Observatory_Lite_figures_", format(Sys.Date(), "%Y%m%d"), ".zip"),
+        function() paste0("GEORISK_Observatory_figures_", format(Sys.Date(), "%Y%m%d"), ".zip"),
         function(file) {
-          dir <- file.path(tempfile("figs"), "GEORISK_Observatory_Lite_figures")
+          dir <- file.path(tempfile("figs"), "GEORISK_Observatory_figures")
           files <- withProgress(message = "Building figures", value = 0,
             suppressWarnings(export_all_figures(store, dir, function(i, n, label) incProgress(1 / n, detail = label))))
           if (requireNamespace("zip", quietly = TRUE)) zip::zipr(file, dir)
