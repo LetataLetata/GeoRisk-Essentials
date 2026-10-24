@@ -166,3 +166,82 @@ $(function () {
     $('details.dl-menu[open]').each(function () { if (!this.contains(e.target)) this.removeAttribute('open'); });
   });
 });
+
+// ---- Help and first-visit guide ---------------------------------------
+$(function () {
+  function get(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function set(k, v) { try { window.localStorage.setItem(k, v); } catch (e) {} }
+  function go(target) {
+    var pill = $('.gr-pill[data-target="' + target + '"]');
+    if (pill.length) pill.first().trigger('click');
+  }
+
+  // Any element with data-goto="page" opens that page.
+  $(document).on('click', '[data-goto]', function (e) {
+    e.preventDefault();
+    var t = $(this).data('goto');
+    if ($(this).closest('#guide').length) closeGuide();
+    go(t);
+  });
+
+  // Welcome guide: slides, dots, back and next.
+  var $g = $('#guide'), slides = $g.find('.guide-slide'), cur = 0, lastFocus = null;
+  slides.each(function (i) { $g.find('.guide-dots').append('<button type="button" class="guide-dot" aria-label="Slide ' + (i + 1) + '"></button>'); });
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.removeClass('on').eq(cur).addClass('on');
+    $g.find('.guide-dot').removeClass('on').eq(cur).addClass('on');
+    $g.find('.guide-back').css('visibility', cur === 0 ? 'hidden' : 'visible');
+    var last = cur === slides.length - 1;
+    var ARROW = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var TICK = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    $g.find('.guide-next').html(last ? 'Close ' + TICK : 'Next ' + ARROW);
+  }
+  function openGuide() { lastFocus = document.activeElement; show(0); $g.addClass('open'); document.body.classList.add('guide-on'); setTimeout(function () { $g.find('.guide-next').trigger('focus'); }, 50); }
+  function closeGuide() { $g.removeClass('open'); document.body.classList.remove('guide-on'); set('gr-guide-seen', '1'); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  window.grOpenGuide = openGuide;
+  $g.on('click', '.guide-next', function () { if (cur === slides.length - 1) closeGuide(); else show(cur + 1); });
+  $g.on('click', '.guide-back', function () { show(cur - 1); });
+  $g.on('click', '.guide-dot', function () { show($(this).index()); });
+  $g.on('click', '.guide-close, .guide-skip', closeGuide);
+  $g.on('click', function (e) { if (e.target === this) closeGuide(); });
+  $(document).on('keydown', function (e) {
+    if (!$g.hasClass('open')) return;
+    if (e.key === 'Escape') closeGuide();
+    else if (e.key === 'ArrowRight') show(cur + 1);
+    else if (e.key === 'ArrowLeft') show(cur - 1);
+  });
+  $(document).on('click', '#open-guide', openGuide);
+  // First visit only: open the guide once the dashboard has drawn.
+  if (get('gr-guide-seen') !== '1') {
+    var opened = false;
+    var openOnce = function () { if (opened) return; opened = true; setTimeout(openGuide, 600); };
+    $(document).one('shiny:idle', openOnce);
+    setTimeout(openOnce, 4000);
+  }
+
+  // View menu: close after a choice or when clicking elsewhere.
+  $(document).on('click', '.view-list button', function () { $(this).closest('details').removeAttr('open'); });
+  $(document).on('click', function (e) {
+    $('details.view-menu[open]').each(function () { if (!this.contains(e.target)) this.removeAttribute('open'); });
+  });
+
+  // Help page: copy buttons and the section list (scroll below the top bar).
+  $(document).on('click', '.copy-btn[data-copy]', function () {
+    var btn = $(this), text = btn.attr('data-copy'), label = btn.find('span'), old = label.text();
+    var done = function () { label.text('Copied'); btn.addClass('copied'); setTimeout(function () { label.text(old); btn.removeClass('copied'); }, 1600); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, function () { fallback(); });
+    else fallback();
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) {} ta.remove();
+    }
+  });
+  $(document).on('click', '.help-toc-link', function (e) {
+    e.preventDefault();
+    var el = document.querySelector($(this).attr('href')); if (!el) return;
+    el.classList.remove('folded');
+    var bar = document.querySelector('.topbar'), off = bar ? bar.getBoundingClientRect().bottom + 12 : 16;
+    window.scrollTo({ top: window.scrollY + el.getBoundingClientRect().top - off, behavior: 'smooth' });
+  });
+});

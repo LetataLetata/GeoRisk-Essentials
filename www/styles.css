@@ -430,3 +430,153 @@ body.resizing .leaflet-container { pointer-events: none; }
 .map-card .html-widget.leaflet, .explore-map .html-widget.leaflet { transition: none; }
 /* keep the scale bar clear of the drag handle */
 .map-card .leaflet-bottom.leaflet-right, .explore-map .leaflet-bottom.leaflet-right { margin-right: 26px; }
+
+/* ===================================================== guidance and help */
+/* Numbered step tabs */
+.pill-n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; margin-right: 6px;
+  background: #E3EBE6; color: var(--green-dark); font-size: 0.7rem; font-weight: 800; vertical-align: -1px; }
+.gr-pill.active .pill-n { background: #86EFAC; color: var(--green-dark); }
+.gr-pill.help-pill { color: var(--green-dark); font-weight: 600; }
+.gr-pill.help-pill:not(.active) { background: rgba(220, 252, 231, 0.8); }
+.gr-pill { padding: 7px 11px; }
+
+/* Top-right tools: Quick tour and a View menu */
+.layout-tools { align-items: center; }
+.layout-tools .tour-btn { color: var(--green-dark); font-weight: 700; }
+.view-menu { position: relative; }
+.view-menu > summary { list-style: none; cursor: pointer; border-radius: 999px; padding: 7px 11px; font-size: 0.78rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.view-menu > summary::-webkit-details-marker { display: none; }
+.view-menu > summary:hover, .view-menu[open] > summary { background: #fff; color: var(--ink); }
+.view-list { position: absolute; right: 0; top: calc(100% + 10px); background: #fff; border-radius: 16px; padding: 6px; min-width: 250px;
+  box-shadow: 0 16px 40px rgba(17, 24, 39, 0.16); border: 1px solid var(--line); z-index: 1100; }
+.view-list button { display: flex !important; gap: 10px; align-items: flex-start; width: 100%; text-align: left; padding: 9px 10px !important;
+  border-radius: 10px !important; color: var(--ink) !important; font-size: 0.85rem !important; }
+.view-list button svg { margin-top: 3px; color: var(--green); }
+.view-list button span { display: flex; flex-direction: column; }
+.view-list small { color: var(--muted); font-weight: 400; font-size: 0.75rem; }
+.view-list button:hover { background: #F3F6F4 !important; }
+.view-list button.on { background: #DCFCE7 !important; }
+
+/* "How to use this page" strip */
+.how-strip { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: -4px 0 14px; padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(22, 163, 74, 0.18); border-left: 4px solid var(--green);
+  border-radius: 14px; color: var(--text); font-size: 0.88rem; }
+.how-strip > span:nth-child(2) { flex: 1; min-width: 260px; }
+.how-tag { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); white-space: nowrap; }
+.how-more { border: 0; background: transparent; color: var(--green-dark); font-weight: 600; font-size: 0.82rem; white-space: nowrap; padding: 2px 4px; }
+.how-more:hover { text-decoration: underline; }
+.how-more svg { margin-left: 4px; }
+body.compact .how-strip { padding: 6px 10px; font-size: 0.8rem; margin-bottom: 10px; }
+
+/* Overview banner buttons */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.hero-btn { border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.12); color: #fff; border-radius: 999px;
+  padding: 9px 16px; font-weight: 600; font-size: 0.9rem; transition: all 0.15s ease; }
+.hero-btn:hover { background: rgba(255, 255, 255, 0.24); }
+.hero-btn.primary { background: #fff; color: var(--green-dark); border-color: #fff; }
+.hero-btn.primary:hover { background: #DCFCE7; }
+.hero-btn svg { margin-right: 4px; }
+
+/* Welcome guide */
+.guide-backdrop { position: fixed; inset: 0; z-index: 3000; display: none; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(15, 23, 20, 0.45); backdrop-filter: blur(3px); }
+.guide-backdrop.open { display: flex; animation: fadein 0.2s ease; }
+body.guide-on { overflow: hidden; }
+.guide-box { position: relative; width: min(620px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: #fff; border-radius: 26px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25); padding: 30px 32px 20px; }
+.guide-close { position: absolute; top: 14px; right: 14px; border: 0; background: #F3F4F6; width: 34px; height: 34px; border-radius: 50%; color: var(--muted); }
+.guide-close:hover { background: #E5E7EB; color: var(--ink); }
+.guide-slide { display: none; min-height: 310px; }
+.guide-slide.on { display: block; animation: fadein 0.25s ease; }
+.guide-slide h2 { font-size: 1.45rem; font-weight: 800; color: var(--ink); margin: 12px 0 10px; letter-spacing: -0.01em; }
+.guide-slide p { color: var(--text); font-size: 0.98rem; line-height: 1.55; }
+.guide-icon { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-size: 1.4rem;
+  background: linear-gradient(135deg, #0F3D2E, #16A34A); color: #BBF7D0; }
+.guide-steps { display: grid; gap: 6px; margin: 4px 0 14px; }
+.guide-step { display: flex; align-items: center; gap: 4px; padding: 8px 10px; background: #F6F8F7; border-radius: 12px; font-weight: 600; color: var(--ink); font-size: 0.92rem; }
+.guide-list { padding-left: 20px; color: var(--text); line-height: 1.6; }
+.guide-list li { margin-bottom: 8px; }
+.guide-keys { display: grid; gap: 10px; }
+.guide-keys > div, .ctrl { display: flex; gap: 12px; align-items: flex-start; color: var(--text); font-size: 0.93rem; line-height: 1.45; }
+.gk { flex: 0 0 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: #F1F5F3; color: var(--green-dark); border: 1px solid #E2E8E4; }
+.gk-green { background: var(--green-dark); color: #86EFAC; border-color: var(--green-dark); }
+.gk-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+.guide-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 6px 0 14px; }
+.guide-choice { border: 1px solid var(--line); background: #F9FBFA; border-radius: 16px; padding: 16px 12px; display: flex; flex-direction: column;
+  align-items: center; gap: 6px; text-align: center; color: var(--ink); transition: all 0.15s ease; }
+.guide-choice svg { font-size: 1.3rem; color: var(--green); }
+.guide-choice span { color: var(--muted); font-size: 0.8rem; }
+.guide-choice:hover { border-color: var(--green); background: #F0FDF4; transform: translateY(-2px); }
+.guide-small { font-size: 0.85rem !important; color: var(--muted) !important; }
+.guide-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 8px; }
+.guide-foot > div:last-child { display: flex; gap: 8px; }
+.guide-skip, .guide-back { border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: 0.88rem; padding: 8px 10px; border-radius: 999px; }
+.guide-skip:hover, .guide-back:hover { background: #F3F4F6; color: var(--ink); }
+.guide-next { border: 0; background: var(--ink); color: #fff; font-weight: 700; padding: 9px 18px; border-radius: 999px; font-size: 0.9rem; }
+.guide-next:hover { background: var(--green-dark); }
+.guide-next svg, .guide-back svg { vertical-align: -2px; }
+.guide-dots { display: flex; gap: 6px; }
+.guide-dot { width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; background: #D1D5DB; }
+.guide-dot.on { background: var(--green); width: 22px; border-radius: 999px; }
+@media (max-width: 600px) {
+  .guide-box { padding: 24px 18px 16px; } .guide-choices { grid-template-columns: 1fr; } .guide-slide { min-height: 0; }
+  .guide-skip { display: none; }
+}
+
+/* Help page */
+.help-toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.help-toc-link { background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(17, 24, 39, 0.08); border-radius: 999px; padding: 6px 13px;
+  font-size: 0.84rem; font-weight: 600; color: var(--green-dark); text-decoration: none; }
+.help-toc-link:hover { background: #fff; color: var(--ink); }
+.help-section { scroll-margin-top: 90px; }
+.help-section .gr-card-title svg { color: var(--green); margin-right: 2px; }
+.help-two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
+.help-two p { color: var(--text); line-height: 1.6; }
+.help-big { font-size: 1.05rem; }
+.help-flow { display: grid; gap: 8px; align-content: start; }
+.help-flow-step { display: flex; gap: 8px; align-items: flex-start; background: #F6F8F7; border-radius: 14px; padding: 10px 12px; }
+.help-flow-step .pill-n { margin-top: 1px; flex: 0 0 20px; }
+.open-grid, .use-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.open-card, .use-card { background: rgba(249, 251, 250, 0.9); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.open-card h3, .use-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--ink); margin: 0; }
+.open-card h3 svg { color: var(--green); }
+.open-card p, .use-card p { color: var(--text); font-size: 0.9rem; margin: 0; line-height: 1.5; }
+.use-card p { flex: 1; }
+.open-tag { align-self: flex-start; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green-dark);
+  background: #DCFCE7; border-radius: 999px; padding: 3px 9px; }
+.open-link { word-break: break-all; font-size: 0.82rem; font-weight: 600; color: var(--green-dark); }
+.open-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.copy-btn { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 6px 12px; font-size: 0.82rem;
+  font-weight: 600; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }
+.copy-btn:hover { border-color: var(--green); color: var(--green-dark); }
+.copy-btn.copied { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+.help-code { font-size: 0.72rem; white-space: pre-wrap; word-break: break-word; margin: 0; max-height: 170px; overflow: auto; }
+.help-go { align-self: flex-start; border: 0; background: var(--ink); color: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 0.85rem; }
+.help-go:hover { background: var(--green-dark); }
+.help-go svg { margin-left: 6px; }
+.help-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.help-table th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.help-table td { padding: 10px; border-bottom: 1px solid #F0F2F1; vertical-align: top; color: var(--text); }
+.help-table td:first-child { white-space: nowrap; color: var(--ink); }
+.ctrl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.ctrl-grid h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--green); font-weight: 800; margin: 4px 0 10px; }
+.ctrl-grid h4:not(:first-child) { margin-top: 18px; }
+.ctrl { margin-bottom: 10px; }
+.glossary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+.gl-item { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-bottom: 1px solid #F0F2F1; }
+.gl-item strong { color: var(--ink); font-size: 0.93rem; }
+.gl-item span { color: var(--text); font-size: 0.88rem; line-height: 1.5; }
+.help-end { display: flex; gap: 12px; justify-content: center; align-items: center; margin: 10px 0 24px; flex-wrap: wrap; }
+.foot-help { color: var(--green-dark); font-weight: 600; }
+@media (max-width: 1100px) {
+  .help-two, .ctrl-grid { grid-template-columns: 1fr; }
+  .open-grid, .use-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .glossary { grid-template-columns: 1fr; }
+  .help-table thead { display: none; } .help-table tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .help-table td { display: block; border: 0; padding: 3px 4px; }
+  .layout-tools .tour-btn { display: none; }
+}
+.gr-pill.help-pill.active { background: var(--ink); color: #fff; }
+.guide-choice svg, .view-list button svg, .gk svg, .help-section .gr-card-title svg, .open-card h3 svg { fill: currentColor; }

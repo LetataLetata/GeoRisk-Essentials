@@ -22,6 +22,8 @@ shiny::runGitHub("GeoRisk-Essentials", "LetataLetata", launch.browser = TRUE)
 
 **How it is built:** system architecture, app logic and wireframes are in [docs/](docs/README.md).
 
+**New here?** The app opens with a one-minute tour on the first visit (reopen it with **Quick tour**, top right). The **Help** tab explains how to open the app, what every page and button does, and the statistics in plain words.
+
 A dashboard that follows one chain of analysis about disaster risk in 191 countries, in five steps. Each step answers one question and feeds the next; every step page shows where it sits in the chain and ends with a button to the next step.
 
 | Step | Page | Question | Main analysis | What you see |
@@ -33,8 +35,9 @@ A dashboard that follows one chain of analysis about disaster risk in 191 countr
 | 4 Test | How sure | Can we trust the results? | Monte Carlo uncertainty, reliability adjustment, robustness checks | 90% ranges for the 30 highest-risk countries, blind spots, clustering under four versions of the data |
 | 5 Decide | Where to act | Where should action come first? | Bivariate classes and Lee's L | Map where danger meets vulnerability for any of 12 hazards, countries by region, what helps at national level |
 | | Explore | What about one country? | Profile | Click a country for its profile, trend, hazards, weak points, national-level recommendations and key facts |
+| | Help | How does it work? | | How to open the app (web, R, download), three ways to use it, every page and control, the words used, quick fixes |
 
-Every page opens with a one-sentence answer computed from the data. Method details are in the collapsed "Method and interpretation" box at the bottom of each page.
+The five step tabs in the top bar are numbered 1 to 5, and under every page title a "How to use this page" line says what to click. Every page opens with a one-sentence answer computed from the data. Method details are in the collapsed "Method and interpretation" box at the bottom of each page.
 
 ## Figures for the report
 
@@ -57,7 +60,7 @@ The Overview page has a button that downloads every figure in publication qualit
 
 ## Layout
 
-Every panel can be folded with the arrow at its top right (or by clicking its title). The top bar has Fold all, Unfold and Compact (tighter spacing, remembered in your browser).
+Every panel can be folded with the arrow at its top right (or by clicking its title). The View menu (top right) has Fold all panels, Unfold all panels and Compact spacing (remembered in your browser).
 
 ## Continents
 
@@ -120,7 +123,7 @@ R/core/           colours, cards, downloads, maps, data store, page registry
 R/analysis/       statistics as plain R functions (no Shiny)
 docs/             system architecture, app logic and wireframes
 scripts/          prepare_data.R (raw to data/), precompute_results.R (all results)
-R/views/          one file per page: 00_overview, 01_data, 02_where, 03_why, 04_sure, 05_act, 06_explore
+R/views/          one file per page: 00_overview, 01_data, 02_where, 03_why, 04_sure, 05_act, 06_explore, 07_help
 R/core/variables.R       the variable dictionary and continent lookup
 R/analysis/figures.R     publication figures and descriptive statistics (used on screen and for export)
 www/              styles and navigation script

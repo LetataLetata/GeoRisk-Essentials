@@ -16,9 +16,27 @@ gr_grid <- function(..., cols = "1fr 1fr", class = NULL) {
   div(class = paste("gr-grid", class), style = paste0("grid-template-columns:", cols, ";"), ...)
 }
 
-page_head <- function(title, lead = NULL, right = NULL) {
-  div(class = "page-head", div(h1(title), if (!is.null(lead)) p(class = "lead", lead)),
-      if (!is.null(right)) div(class = "page-head-right", right))
+page_head <- function(title, lead = NULL, right = NULL, how = NULL) {
+  tagList(div(class = "page-head", div(h1(title), if (!is.null(lead)) p(class = "lead", lead)),
+              if (!is.null(right)) div(class = "page-head-right", right)),
+          how_strip(how))
+}
+
+# One line under each page title saying what to do on the page.
+PAGE_HOW <- list(
+  data = "Pick a group of variables or one continent with the menus on the right. Click any coloured cell in the correlation grid to see the countries behind it, and click a point to label a country.",
+  where = "Choose what to map with \"Look at\". Red countries are hot spots (high values surrounded by high values), blue are cold spots. Hover over a country or dot to see its name.",
+  why = "Choose what to explain at the top right. Click points in the scatter to label countries. On the map, red means riskier than the country's wealth predicts, blue means safer.",
+  sure = "Each bar shows how far a country's score could move if its data contain errors: the longer the bar, the less certain. Blind spots are high-risk countries with weak data.",
+  act = "Choose a danger at the top right. Dark purple countries face both high danger and high vulnerability; the list on the right names them by region.",
+  explore = "Click any country on the map, or type its name in \"Find a country\". Its profile opens on the right; click a neighbour in the profile to jump to it."
+)
+
+how_strip <- function(how) {
+  if (is.null(how)) return(NULL)
+  div(class = "how-strip", span(class = "how-tag", icon("hand-pointer"), " How to use this page"), span(how),
+      tags$button(type = "button", class = "how-more", onclick = "Shiny.setInputValue('nav_to', 'help', {priority: 'event'})",
+                  "More help", icon("arrow-right")))
 }
 
 kpi_tile <- function(label, value, sub = NULL, icon_name = NULL, tone = "light") {
@@ -38,7 +56,7 @@ controls <- function(...) div(class = "gr-controls", ...)
 # ------------------------------------------------------------- downloads --
 download_menu <- function(ns, csv = TRUE, image = TRUE) {
   tags$details(class = "dl-menu",
-    tags$summary(icon("download")),
+    tags$summary(icon("download"), title = "Download this figure or its data"),
     div(class = "dl-list",
         if (image) downloadLink(ns("dl_png"), "PNG (300 dpi)"),
         if (image) downloadLink(ns("dl_pdf"), "PDF (vector)"),
@@ -131,7 +149,7 @@ map_server <- function(id, leaflet_r, static_r, title, caption = "", filename = 
 table_ui <- function(id, title, subtitle = NULL) {
   ns <- NS(id)
   gr_card(title = title, subtitle = subtitle,
-          tools = tags$details(class = "dl-menu", tags$summary(icon("download")),
+          tools = tags$details(class = "dl-menu", tags$summary(icon("download"), title = "Download this figure or its data"),
                                div(class = "dl-list", downloadLink(ns("dl_csv"), "Table (CSV)"))),
           class = "table-card", DT::DTOutput(ns("tbl"), fill = FALSE))
 }
@@ -204,11 +222,13 @@ chain_nav <- function(current = NULL) {
 
 step_head <- function(id, title, lead = NULL, right = NULL) {
   i <- match(id, STEPS$id)
-  tagList(chain_nav(id),
-          div(class = "page-head",
+  # The numbered tabs in the top bar already show the five steps, so the page
+  # only says which step it is.
+  tagList(div(class = "page-head",
               div(div(class = "step-eyebrow", sprintf("Step %d of %d: %s", i, nrow(STEPS), STEPS$verb[i])),
                   h1(title), if (!is.null(lead)) p(class = "lead", lead)),
-              if (!is.null(right)) div(class = "page-head-right", right)))
+              if (!is.null(right)) div(class = "page-head-right", right)),
+          how_strip(PAGE_HOW[[id]]))
 }
 
 next_step <- function(id) {

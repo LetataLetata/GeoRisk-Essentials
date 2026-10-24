@@ -8,7 +8,12 @@ register_view(
     tagList(
       div(class = "hero", style = "margin-bottom:18px;",
         h1(style = "color:#fff;font-weight:800;", "Where is disaster risk highest, why, and how sure can we be?"),
-        p(class = "lead", "Disasters do the most harm where danger meets disadvantage. This dashboard uses spatial statistics on the INFORM Risk Index for 191 countries to show where risk concentrates, what explains it, how far the results can be trusted, and where action matters most.")),
+        p(class = "lead", "Disasters do the most harm where danger meets disadvantage. This dashboard uses spatial statistics on the INFORM Risk Index for 191 countries to show where risk concentrates, what explains it, how far the results can be trusted, and where action matters most."),
+        div(class = "hero-actions",
+            tags$button(type = "button", class = "hero-btn primary", `data-goto` = "data", icon("play"), " Start the analysis (step 1)"),
+            tags$button(type = "button", class = "hero-btn", `data-goto` = "explore", icon("map-location-dot"), " Look up a country"),
+            tags$button(type = "button", class = "hero-btn", onclick = "window.grOpenGuide && window.grOpenGuide()", icon("compass"), " One-minute tour"),
+            tags$button(type = "button", class = "hero-btn", `data-goto` = "help", icon("circle-question"), " Help"))),
       gr_card(title = "How the analysis works", subtitle = "Five steps, each answering one question and feeding the next. Click a step to open it.",
               tools = downloadLink(ns("dl_workflow"), tagList(icon("download"), " Figure"), class = "wf-dl"),
         div(class = "workflow", lapply(seq_len(nrow(STEPS)), function(i) {

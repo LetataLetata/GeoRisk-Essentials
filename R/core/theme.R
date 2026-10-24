@@ -54,6 +54,13 @@ gr_plotly <- function(p, tooltip = "text", legend_bottom = TRUE, source = NULL) 
                        modeBarButtonsToRemove = c("lasso2d", "select2d", "autoScale2d", "toggleSpikelines",
                                                   "hoverClosestCartesian", "hoverCompareCartesian"),
                        toImageButtonOptions = list(format = "png", scale = 3))
+  # ggplot legends switched off with guide = "none" are not switched off by
+  # ggplotly, which then shows junk entries such as "(Africa,1)". Hide them too.
+  if (inherits(p, "ggplot")) {
+    sc <- Filter(function(s) !any(s$aesthetics %in% c("x", "y", "xmin", "xmax", "ymin", "ymax", "xend", "yend")), p$scales$scales)
+    if (length(sc) && all(vapply(sc, function(s) identical(s$guide, "none"), logical(1))))
+      pl <- plotly::layout(pl, showlegend = FALSE)
+  }
   plotly::layout(pl,
     font = list(family = GR$font, size = 12, color = GR$text),
     hoverlabel = list(bgcolor = "white", bordercolor = GR$line, font = list(family = GR$font, color = GR$ink)),

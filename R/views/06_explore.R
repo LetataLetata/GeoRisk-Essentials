@@ -30,7 +30,8 @@ register_view(
                 controls(
                   selectizeInput(ns("find"), "Find a country", choices = c("Type a name" = "", stats::setNames(inf$iso3, inf$country)), width = "220px"),
                   selectInput(ns("colour"), "Colour countries by", colour_choices, selected = "risk_class", width = "250px"),
-                  sliderInput(ns("opacity"), "Colour strength", 0, 1, 0.55, step = 0.05, width = "170px"))),
+                  sliderInput(ns("opacity"), "Colour strength", 0, 1, 0.55, step = 0.05, width = "170px")),
+                how = PAGE_HOW$explore),
       div(class = "explore-grid",
         div(class = "gr-card map-card explore-map", leaflet::leafletOutput(ns("map"), height = "100%")),
         div(class = "gr-card explore-panel", uiOutput(ns("panel"))))

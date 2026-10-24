@@ -3360,7 +3360,7 @@
       "checksum": "91e72ad554ae6fe570fe3a1e60c99883"
     },
     "R/core/components.R": {
-      "checksum": "3c1aa5906acc7b738f5a4b2ff3ba2293"
+      "checksum": "37067cfcaf2ba5300c27d0390d2ed466"
     },
     "R/core/maps.R": {
       "checksum": "8abb498f5d29f3b151ce648233849c97"
@@ -3372,13 +3372,13 @@
       "checksum": "897b36f6452c9a934c76ef35c681834f"
     },
     "R/core/theme.R": {
-      "checksum": "7b215f3d3c5ec45e6c2b61b207eecb26"
+      "checksum": "6e2d937c45ff2917e06e728a4f15ab80"
     },
     "R/core/variables.R": {
       "checksum": "c64272fe3afc208293afa5ea2cc320f4"
     },
     "R/views/00_overview.R": {
-      "checksum": "d74701eed1d8b84f8bbe785784557222"
+      "checksum": "9d9126f6d601e2c193c9da02d718f9fb"
     },
     "R/views/01_data.R": {
       "checksum": "0f039d46781422697b4cba2d9a5d79f2"
@@ -3396,13 +3396,13 @@
       "checksum": "6b588739fdb79155ff0f5fb510baa9d0"
     },
     "R/views/06_explore.R": {
-      "checksum": "e2e683982e7611e0a08624b01862f546"
+      "checksum": "870b567a8db81993440200e0acb3c152"
     },
     "README.md": {
-      "checksum": "d279ac6724600214f3fe89291a6cfcbc"
+      "checksum": "59a9d3dd7495362e76410cb4bb4d9221"
     },
     "app.R": {
-      "checksum": "073abdc87e14e0037bc47e42f7c015a8"
+      "checksum": "4894409f225c40b2317ebfdb6b4e97be"
     },
     "data/geography.rds": {
       "checksum": "22906f90ff76901e5e84944c19f410cd"
@@ -3450,10 +3450,13 @@
       "checksum": "840680b8db5349a59b68605a52c12edf"
     },
     "www/app.js": {
-      "checksum": "c434ca63b82f9c60e60609f258b7a589"
+      "checksum": "829ee3d7734cea8f836c8ade7766a42b"
     },
     "www/styles.css": {
-      "checksum": "616f12296e856beba128da7e747df2c5"
+      "checksum": "f5a12a5d2589fc2fa1d2595546927850"
+    },
+    "R/views/07_help.R": {
+      "checksum": "c2e40dea8e426403f314e16350a5a3de"
     }
   },
   "users": null
