@@ -40,7 +40,7 @@ section { display: grid; gap: 14px; }
 .scroll svg { display: block; min-width: 980px; width: 100%; height: auto; }
 .legend-row { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: var(--muted); }
 .legend-row span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--c); border: 1px solid var(--line); }
-.steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.steps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
 .step { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 4px; align-content: start; background: var(--panel); }
 .step b { font-family: var(--mono); font-size: 0.72rem; color: var(--leaf); letter-spacing: 0.06em; text-transform: uppercase; }
 .step strong { color: var(--ink); font-size: 0.95rem; line-height: 1.3; }
@@ -92,10 +92,10 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--wire); pad
 <div class="wrap">
   <header class="intro">
     <div class="eyebrow">GEORISK Observatory &middot; how the app is built</div>
-    <h1>From open data to a decision, in five steps</h1>
-    <p class="lead">GEORISK Observatory is an R Shiny dashboard that applies spatial statistics to the INFORM Risk Index for 191 countries. It is built around one chain of questions: what is in the data, where risk is concentrated, what explains it, how sure we can be, and where action should come first.</p>
+    <h1>From open data to a decision, in six steps</h1>
+    <p class="lead">GEORISK Observatory is an R Shiny dashboard that applies spatial statistics to the INFORM Risk Index for 191 countries. It is built around one chain of questions: what is in the data, where risk is concentrated, whether the disaster events themselves cluster, what explains it, how sure we can be, and where action should come first.</p>
     <div class="facts">
-      <span class="fact">191 countries</span><span class="fact">41 variables</span><span class="fact">INFORM Risk 2026</span><span class="fact">5 nearest-neighbour weights</span><span class="fact">7 pages</span><span class="fact">12 report figures</span>
+      <span class="fact">191 countries</span><span class="fact">41 variables</span><span class="fact">INFORM Risk 2026</span><span class="fact">5 nearest-neighbour weights</span><span class="fact">9 pages</span><span class="fact">14 report figures</span><span class="fact">23,409 earthquakes</span>
     </div>
   </header>
 
@@ -105,9 +105,10 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--wire); pad
     <div class="steps">
       <div class="step"><b>Step 1 &middot; Describe</b><strong>What is in the data?</strong><small>Descriptive statistics, distributions, Spearman correlations by continent</small></div>
       <div class="step"><b>Step 2 &middot; Locate</b><strong>Where is risk concentrated?</strong><small>Global and local Moran's I for any of 33 INFORM variables</small></div>
-      <div class="step"><b>Step 3 &middot; Explain</b><strong>What explains it?</strong><small>Regression on wealth, Lagrange multiplier tests, spatial error model</small></div>
-      <div class="step"><b>Step 4 &middot; Test</b><strong>How sure can we be?</strong><small>Monte Carlo uncertainty, reliability adjustment, robustness</small></div>
-      <div class="step"><b>Step 5 &middot; Decide</b><strong>Where should action come first?</strong><small>Danger meets vulnerability: bivariate classes and Lee's L</small></div>
+      <div class="step"><b>Step 3 &middot; Detect</b><strong>Are the events themselves clustered?</strong><small>Point pattern of 23,409 earthquakes: kernel density, quadrat test, nearest-neighbour index, G and L functions</small></div>
+      <div class="step"><b>Step 4 &middot; Explain</b><strong>What explains it?</strong><small>Regression on wealth, Lagrange multiplier tests, spatial error model</small></div>
+      <div class="step"><b>Step 5 &middot; Test</b><strong>How sure can we be?</strong><small>Monte Carlo uncertainty, reliability adjustment, robustness</small></div>
+      <div class="step"><b>Step 6 &middot; Decide</b><strong>Where should action come first?</strong><small>Danger meets vulnerability: bivariate classes and Lee's L</small></div>
     </div>
   </section>
 
@@ -173,12 +174,14 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--wire); pad
         <rect class="box box-view" x="734" y="56" width="182" height="34" rx="8"/><text class="t-head" x="746" y="78">Overview</text>
         <rect class="box box-view" x="734" y="98" width="182" height="34" rx="8"/><text class="t-head" x="746" y="120">1 Data</text>
         <rect class="box box-view" x="734" y="140" width="182" height="34" rx="8"/><text class="t-head" x="746" y="162">2 Where</text>
-        <rect class="box box-view" x="734" y="182" width="182" height="34" rx="8"/><text class="t-head" x="746" y="204">3 Why</text>
-        <rect class="box box-view" x="734" y="224" width="182" height="34" rx="8"/><text class="t-head" x="746" y="246">4 How sure</text>
-        <rect class="box box-view" x="734" y="266" width="182" height="34" rx="8"/><text class="t-head" x="746" y="288">5 Where to act</text>
-        <rect class="box box-view" x="734" y="308" width="182" height="34" rx="8"/><text class="t-head" x="746" y="330">Explore</text>
-        <text class="t-small" x="734" y="370">Each: answer sentence, data note,</text>
-        <text class="t-small" x="734" y="386">main figure, method box, next step</text>
+        <rect class="box box-view" x="734" y="182" width="182" height="34" rx="8"/><text class="t-head" x="746" y="204">3 Events</text>
+        <rect class="box box-view" x="734" y="224" width="182" height="34" rx="8"/><text class="t-head" x="746" y="246">4 Why</text>
+        <rect class="box box-view" x="734" y="266" width="182" height="34" rx="8"/><text class="t-head" x="746" y="288">5 How sure</text>
+        <rect class="box box-view" x="734" y="308" width="182" height="34" rx="8"/><text class="t-head" x="746" y="330">6 Where to act</text>
+        <rect class="box box-view" x="734" y="350" width="182" height="34" rx="8"/><text class="t-head" x="746" y="372">Explore</text>
+        <rect class="box box-view" x="734" y="392" width="182" height="34" rx="8"/><text class="t-head" x="746" y="414">Help</text>
+        <text class="t-small" x="734" y="454">Each step: answer sentence, data note,</text>
+        <text class="t-small" x="734" y="470">main figure, method box, next step</text>
 
         <!-- browser -->
         <rect class="box" x="964" y="56" width="172" height="88" rx="8"/>
@@ -246,32 +249,25 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--wire); pad
         <path class="a2" d="M920 168 H1010 V110"/>
 
         <text class="t-title" x="10" y="246">The analysis chain and its decision rules</text>
-        <rect class="box" x="10" y="264" width="214" height="190" rx="10"/>
+        <rect class="box" x="10" y="264" width="178" height="190" rx="10"/>
         <text class="t-head" x="22" y="288">1 Describe</text>
-        <text class="t-small" x="22" y="308">n, missing, mean, SD, quartiles,</text><text class="t-small" x="22" y="324">skewness, Shapiro-Wilk</text>
-        <text class="t-small" x="22" y="348">Skewed? Use ranks:</text><text class="t-small" x="22" y="364">Spearman correlation</text>
-        <text class="t-small" x="22" y="388">Click a correlation cell:</text><text class="t-small" x="22" y="404">countries by continent</text>
-        <rect class="box" x="240" y="264" width="214" height="190" rx="10"/>
-        <text class="t-head" x="252" y="288">2 Locate</text>
-        <text class="t-small" x="252" y="308">Global Moran's I,</text><text class="t-small" x="252" y="324">999 permutations</text>
-        <text class="t-small" x="252" y="348">p &lt; 0.05? Clustered:</text><text class="t-small" x="252" y="364">local Moran's I clusters</text>
-        <text class="t-small" x="252" y="388">False discovery rate</text><text class="t-small" x="252" y="404">for 191 tests at once</text>
-        <rect class="box" x="470" y="264" width="214" height="190" rx="10"/>
-        <text class="t-head" x="482" y="288">3 Explain</text>
-        <text class="t-small" x="482" y="308">Ordinary regression on</text><text class="t-small" x="482" y="324">log GDP per person</text>
-        <text class="t-small" x="482" y="348">Residuals clustered?</text><text class="t-small" x="482" y="364">LM tests (Anselin rule):</text>
-        <text class="t-small" x="482" y="388">lag or error model;</text><text class="t-small" x="482" y="404">compare by AIC</text>
-        <rect class="box" x="700" y="264" width="214" height="190" rx="10"/>
-        <text class="t-head" x="712" y="288">4 Test</text>
-        <text class="t-small" x="712" y="308">1,000 simulations of data</text><text class="t-small" x="712" y="324">error by reliability</text>
-        <text class="t-small" x="712" y="348">Clustering recomputed on</text><text class="t-small" x="712" y="364">4 versions of the data</text>
-        <text class="t-small" x="712" y="388">High risk + weak data</text><text class="t-small" x="712" y="404">= blind spot</text>
-        <rect class="box" x="930" y="264" width="220" height="190" rx="10"/>
-        <text class="t-head" x="942" y="288">5 Decide</text>
-        <text class="t-small" x="942" y="308">Thirds of danger and of</text><text class="t-small" x="942" y="324">vulnerability: 9 classes</text>
-        <text class="t-small" x="942" y="348">Top third on both</text><text class="t-small" x="942" y="364">= double burden</text>
-        <text class="t-small" x="942" y="388">Lee's L: do they cluster</text><text class="t-small" x="942" y="404">together? National actions</text>
-        <path class="a2" d="M224 359 H238"/><path class="a2" d="M454 359 H468"/><path class="a2" d="M684 359 H698"/><path class="a2" d="M914 359 H928"/>
+<text class="t-small" x="22" y="308">Statistics for 41</text><text class="t-small" x="22" y="324">variables, skewness</text><text class="t-small" x="22" y="348">Skewed? Use ranks:</text><text class="t-small" x="22" y="364">Spearman correlation</text><text class="t-small" x="22" y="388">Click a cell: the</text><text class="t-small" x="22" y="404">countries behind it</text>
+        <rect class="box" x="202" y="264" width="178" height="190" rx="10"/>
+        <text class="t-head" x="214" y="288">2 Locate</text>
+<text class="t-small" x="214" y="308">Global Moran's I,</text><text class="t-small" x="214" y="324">999 permutations</text><text class="t-small" x="214" y="348">p &lt; 0.05? Clustered:</text><text class="t-small" x="214" y="364">local Moran's I</text><text class="t-small" x="214" y="388">False discovery rate</text><text class="t-small" x="214" y="404">for 191 tests</text>
+        <rect class="box" x="394" y="264" width="178" height="190" rx="10"/>
+        <text class="t-head" x="406" y="288">3 Detect</text>
+<text class="t-small" x="406" y="308">Earthquake points vs</text><text class="t-small" x="406" y="324">complete randomness</text><text class="t-small" x="406" y="348">Kernel density;</text><text class="t-small" x="406" y="364">quadrat test (VMR)</text><text class="t-small" x="406" y="388">Nearest-neighbour</text><text class="t-small" x="406" y="404">index; G and L</text>
+        <rect class="box" x="586" y="264" width="178" height="190" rx="10"/>
+        <text class="t-head" x="598" y="288">4 Explain</text>
+<text class="t-small" x="598" y="308">Regression on</text><text class="t-small" x="598" y="324">log GDP per person</text><text class="t-small" x="598" y="348">Residuals clustered?</text><text class="t-small" x="598" y="364">LM tests (Anselin):</text><text class="t-small" x="598" y="388">lag or error model;</text><text class="t-small" x="598" y="404">compare by AIC</text>
+        <rect class="box" x="778" y="264" width="178" height="190" rx="10"/>
+        <text class="t-head" x="790" y="288">5 Test</text>
+<text class="t-small" x="790" y="308">1,000 simulations</text><text class="t-small" x="790" y="324">of data error</text><text class="t-small" x="790" y="348">Clustering on 4</text><text class="t-small" x="790" y="364">versions of the data</text><text class="t-small" x="790" y="388">High risk + weak</text><text class="t-small" x="790" y="404">data = blind spot</text>
+        <rect class="box" x="970" y="264" width="178" height="190" rx="10"/>
+        <text class="t-head" x="982" y="288">6 Decide</text>
+<text class="t-small" x="982" y="308">Thirds of danger and</text><text class="t-small" x="982" y="324">of vulnerability</text><text class="t-small" x="982" y="348">Top third on both</text><text class="t-small" x="982" y="364">= double burden</text><text class="t-small" x="982" y="388">Lee's L; actions</text><text class="t-small" x="982" y="404">at national level</text>
+        <path class="a2" d="M188 359 H200"/><path class="a2" d="M380 359 H392"/><path class="a2" d="M572 359 H584"/><path class="a2" d="M764 359 H776"/><path class="a2" d="M956 359 H968"/>
       </svg>
     </div>
     <ol class="flow">
@@ -288,17 +284,17 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--wire); pad
     <div class="wires">
       <div class="wire"><h3>Overview <small>landing page</small></h3>
         <div class="screen">
-          <div class="row rbar"><div class="w solid">GEORISK Observatory</div><div class="w solid">Overview | Data | Where | Why | How sure | Act | Explore</div><div class="w solid">Fold | Compact</div></div>
-          <div class="w dark mid">Question: where is risk highest, why, how sure?</div>
-          <div class="row r5"><div class="w">Step 1</div><div class="w">Step 2</div><div class="w">Step 3</div><div class="w">Step 4</div><div class="w">Step 5</div></div>
-          <div class="row r4"><div class="w solid mid">Where? 18 countries</div><div class="w solid mid">Why? 63%</div><div class="w solid mid">How sure? 10 blind spots</div><div class="w solid mid">Act? 2.06 billion</div></div>
+          <div class="row rbar"><div class="w solid">GEORISK Observatory</div><div class="w solid">Overview | 1 to 6 | Explore | Help</div><div class="w solid">Quick tour | View</div></div>
+          <div class="w dark mid">Global distribution of disasters: the six steps in one line</div>
+          
+          <div class="row r5"><div class="w solid mid">Where: 18</div><div class="w solid mid">Events: 4 times</div><div class="w solid mid">Why: 63%</div><div class="w solid mid">How sure: 10</div><div class="w solid mid">Act: 2.1 billion</div></div>
           <div class="w tall">World risk map (click a country: Explore)</div>
-          <div class="w">Download all figures and tables</div>
+          <div class="row r2"><div class="w">The six steps as one row</div><div class="w">For reports (folded)</div></div>
         </div></div>
-      <div class="wire"><h3>Step page <small>template for steps 1 to 5</small></h3>
+      <div class="wire"><h3>Step page <small>template for steps 1 to 6</small></h3>
         <div class="screen">
           <div class="row rbar"><div class="w solid">GEORISK Observatory</div><div class="w solid">page buttons</div><div class="w solid">layout</div></div>
-          <div class="w left">1 Describe &gt; 2 Locate &gt; 3 Explain &gt; 4 Test &gt; 5 Decide</div>
+          <div class="w left">How to use this page: one line on what to click</div>
           <div class="row r2"><div class="w left">Step n: question as title</div><div class="w">Setting (e.g. indicator)</div></div>
           <div class="w dark">The answer: one sentence with the key number</div>
           <div class="w left">Data note: n of 191 countries; excluded list</div>

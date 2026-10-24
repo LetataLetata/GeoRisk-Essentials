@@ -29,6 +29,7 @@ page_head <- function(title, lead = NULL, right = NULL, how = NULL) {
 PAGE_HOW <- list(
   data = "Pick a group of variables or one continent with the menus on the right. Click any coloured cell in the correlation grid to see the countries behind it, and click a point to label a country.",
   where = "Choose what to map with \"Look at\". Red countries are hot spots (high values surrounded by high values), blue are cold spots. Hover over a country or dot to see its name.",
+  events = "Choose a region and the smallest magnitude at the top right. Red curves above the grey band mean more clustered than random. Hover over the curves for the values; the last chart links the events to each country's score.",
   why = "Choose what to explain at the top right. Click points in the scatter to label countries. On the map, red means riskier than the country's wealth predicts, blue means safer.",
   sure = "Each bar shows how far a country's score could move if its data contain errors: the longer the bar, the less certain. Blind spots are high-risk countries with weak data.",
   act = "Choose a danger at the top right. Dark purple countries face both high danger and high vulnerability; the list on the right names them by region.",
@@ -42,13 +43,6 @@ how_strip <- function(how) {
                   "More help", icon("arrow-right")))
 }
 
-kpi_tile <- function(label, value, sub = NULL, icon_name = NULL, tone = "light") {
-  div(class = paste("kpi", paste0("kpi-", tone)),
-      if (!is.null(icon_name)) div(class = "kpi-icon", icon(icon_name)),
-      div(class = "kpi-label", label),
-      div(class = "kpi-value", value),
-      if (!is.null(sub)) div(class = "kpi-sub", sub))
-}
 
 note <- function(..., tone = "info") div(class = paste("gr-note", paste0("note-", tone)), ...)
 
@@ -191,41 +185,28 @@ ordinal <- function(n) paste0(n, ifelse(n %% 100 %in% 11:13, "th", c("th", "st",
 # The one-sentence answer that opens every page.
 answer_box <- function(...) div(class = "answer-box", div(class = "answer-label", "The answer"), div(class = "answer-text", ...))
 
-# Finding card on the Overview page; clicking it opens the page that explains it.
-finding_card <- function(target, question, value, text, icon_name, tone = "light") {
-  tags$button(type = "button", class = paste("finding", paste0("finding-", tone)), onclick = sprintf("Shiny.setInputValue('nav_to', '%s', {priority: 'event'})", target),
-              div(class = "finding-q", icon(icon_name), question),
-              div(class = "finding-v", value),
-              div(class = "finding-t", text),
-              div(class = "finding-go", "See how we know ", icon("arrow-right")))
-}
 
 # ------------------------------------------------------ chain of analysis --
-# The five steps of the analysis, in order. Each step page shows where it sits
+# The six steps of the analysis, in order. Each step page shows where it sits
 # in the chain and ends with a button to the next step.
 STEPS <- data.frame(stringsAsFactors = FALSE,
-  id = c("data", "where", "why", "sure", "act"),
-  verb = c("Describe", "Locate", "Explain", "Test", "Decide"),
-  question = c("What is in the data?", "Where is risk concentrated?", "What explains it?", "How sure can we be?", "Where should action come first?"),
-  method = c("Descriptive statistics, distributions, correlations", "Global and local Moran's I", "Regression, Lagrange multiplier tests, spatial error model",
+  id = c("data", "where", "events", "why", "sure", "act"),
+  verb = c("Describe", "Locate", "Detect", "Explain", "Test", "Decide"),
+  question = c("What is in the data?", "Where is risk concentrated?", "Are the events themselves clustered?", "What explains it?", "How sure can we be?", "Where should action come first?"),
+  method = c("Descriptive statistics, distributions, correlations", "Global and local Moran's I", "Point pattern: kernel density, quadrat test, nearest neighbour, G and L functions",
+             "Regression, Lagrange multiplier tests, spatial error model",
              "Monte Carlo uncertainty, reliability adjustment, robustness", "Bivariate classes, Lee's L"),
-  output = c("Know the variables, their spread and gaps", "Clusters of high and low risk", "Wealth explains much; geography still matters",
+  output = c("Know the variables, their spread and gaps", "Clusters of high and low risk", "Earthquakes cluster far beyond chance",
+             "Wealth explains much; geography still matters",
              "Which results are firm, and the blind spots", "Countries where danger meets vulnerability"))
 
-chain_nav <- function(current = NULL) {
-  div(class = "chain", lapply(seq_len(nrow(STEPS)), function(i) {
-    s <- STEPS[i, ]
-    tagList(
-      tags$button(type = "button", class = paste("chain-step", if (identical(s$id, current)) "current"),
-                  onclick = sprintf("Shiny.setInputValue('nav_to', '%s', {priority: 'event'})", s$id),
-                  span(class = "chain-n", i), span(class = "chain-verb", s$verb)),
-      if (i < nrow(STEPS)) span(class = "chain-arrow", icon("chevron-right")))
-  }))
-}
+# "Step 3: Events" for a page id, numbered from STEPS so the labels never go out of step.
+step_label <- function(id, title) sprintf("Step %d: %s", match(id, STEPS$id), title)
+
 
 step_head <- function(id, title, lead = NULL, right = NULL) {
   i <- match(id, STEPS$id)
-  # The numbered tabs in the top bar already show the five steps, so the page
+  # The numbered tabs in the top bar already show the six steps, so the page
   # only says which step it is.
   tagList(div(class = "page-head",
               div(div(class = "step-eyebrow", sprintf("Step %d of %d: %s", i, nrow(STEPS), STEPS$verb[i])),

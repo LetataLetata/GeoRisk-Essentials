@@ -8,7 +8,9 @@ load_store <- function(dir = "data") {
     inform = rd("inform.rds"), dict = rd("inform_dictionary.rds"), quality = rd("inform_quality.rds"),
     trend = rd("inform_trend.rds"), owid = rd("owid_energy.rds"), geo = rd("geography.rds"),
     # The measured facts behind the scores, and recorded earthquakes (scripts/prepare_indicators.R).
-    indicators = rd("inform_indicators.rds"), quakes = rd("earthquakes.rds")
+    indicators = rd("inform_indicators.rds"), quakes = rd("earthquakes.rds"),
+    # Point pattern results for step 3, Events (scripts/precompute_points.R).
+    points = rd("point_pattern.rds")
   )
   # Comparable versions (R/analysis/harmonise.R): reliability-adjusted scores
   # with a world-average prior, and percentile ranks.
@@ -58,21 +60,6 @@ var_label <- function(store, v) {
   ifelse(is.na(l), v, l)
 }
 
-# Variable choices grouped by pillar for select inputs.
-var_choices <- function(store, include_quality = FALSE, include_comparable = FALSE) {
-  d <- store$dict
-  out <- lapply(split(d, factor(d$pillar, levels = c("Risk", "Hazard", "Vulnerability", "Coping"))),
-                function(x) stats::setNames(x$var, x$label))
-  if (include_quality) out[["Data quality"]] <- c("Lack of reliability (INFORM)" = "reliability_index",
-                                                  "Mean data age (years)" = "mean_data_age_years",
-                                                  "Imputed indicators (share)" = "imputed_share")
-  if (include_comparable && "inform_risk_adj" %in% names(store$inform)) {
-    pv <- c("inform_risk", "hazard_and_exposure", "vulnerability", "lack_of_coping_capacity")
-    out[["Comparable: adjusted for data reliability"]] <- stats::setNames(paste0(pv, "_adj"), unname(store$labels[paste0(pv, "_adj")]))
-    out[["Comparable: percentile rank (0-100)"]] <- stats::setNames(paste0(pv, "_pct"), unname(store$labels[paste0(pv, "_pct")]))
-  }
-  out
-}
 
 need_data <- function(store, ...) {
   miss <- c(...)[vapply(c(...), function(k) is.null(store[[k]]), logical(1))]

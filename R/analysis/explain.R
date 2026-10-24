@@ -161,7 +161,7 @@ events_for <- function(store, iso, var) {
                                                   fmt_ind(a, "people"), max(1L, as.integer(round(f * 35))))
   }
   if (var %in% c("earthquake", "tsunami", "natural", "hazard_and_exposure", "inform_risk") && !is.null(store$quakes)) {
-    q <- store$quakes[store$quakes$iso3 == iso, ]
+    q <- store$quakes[which(store$quakes$iso3 == iso), ]
     if (var == "tsunami") q <- q[q$magnitude >= 7, ]
     if (nrow(q)) {
       q <- q[order(-q$magnitude, q$date), ]

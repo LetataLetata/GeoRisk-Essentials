@@ -52,17 +52,6 @@ bivariate_legend_html <- function(xlab = "Hazard", ylab = "Vulnerability") {
            <div style='margin-left:20px;margin-top:2px'>%s &rarr;</div></div>", ylab, paste(rows, collapse = ""), xlab)
 }
 
-# Interactive and static bivariate maps, shared by analyst and public views.
-bivariate_leaflet <- function(store, cls, labels, hz_lab, vu_lab, extra = NULL) {
-  sf <- store$inform_sf
-  fill <- ifelse(is.na(cls), "#D1D5DB", BIVAR_COLS[as.character(cls)])
-  tip <- sprintf("<div class='map-tip'><b>%s</b><br/>%s%s</div>", sf$country, ifelse(is.na(labels), "<i>No data: excluded from this analysis</i>", labels), if (is.null(extra)) "" else extra)
-  leaflet_base() |> leaflet::setView(15, 20, 1.6) |>
-    leaflet::addPolygons(data = sf, layerId = ~iso3, fillColor = fill, fillOpacity = 0.85, color = "#FFFFFF", weight = 0.6,
-                         label = lapply(tip, htmltools::HTML),
-                         highlightOptions = leaflet::highlightOptions(weight = 2, color = GR$ink, bringToFront = TRUE)) |>
-    leaflet::addControl(htmltools::HTML(bivariate_legend_html(hz_lab, vu_lab)), position = "bottomleft", className = "info legend")
-}
 
 bivariate_static <- function(store, cls, hz_lab, vu_lab) {
   p <- static_choropleth(store, factor(as.character(cls), levels = names(BIVAR_COLS)), NULL, "factor", BIVAR_COLS) +

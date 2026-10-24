@@ -1,6 +1,8 @@
 # GEORISK Observatory
 
-A five-step dashboard: spatial statistics of disaster risk for 191 countries (INFORM Risk Index 2026), built in R Shiny.
+A six-step dashboard: spatial statistics of disaster risk for 191 countries (INFORM Risk Index 2026) and of 23,409 recorded earthquakes, built in R Shiny.
+
+Created by Lerata Lerata, Crispen Chipimo, Orifha Makhado and Buhlebethu Masango (University of the Witwatersrand, Johannesburg).
 
 ## Open the app
 
@@ -24,20 +26,21 @@ shiny::runGitHub("GeoRisk-Essentials", "LetataLetata", launch.browser = TRUE)
 
 **New here?** The app opens on a welcome screen (click Continue, or press Enter; click the logo to see it again), then a one-minute tour on the first visit (reopen it with **Quick tour**, top right). The **Help** tab explains how to open the app, what every page and button does, and the statistics in plain words.
 
-A dashboard that follows one chain of analysis about disaster risk in 191 countries, in five steps. Each step answers one question and feeds the next; every step page shows where it sits in the chain and ends with a button to the next step.
+A dashboard that follows one chain of analysis about disaster risk in 191 countries, in six steps. Each step answers one question and feeds the next; every step page shows where it sits in the chain and ends with a button to the next step.
 
 | Step | Page | Question | Main analysis | What you see |
 |---|---|---|---|---|
 | | Overview | All of them | Summary | Workflow diagram (click a step to open it), the main findings, world risk map, download of all figures and tables |
 | 1 Describe | Data | What is in the data? | Descriptive statistics, distributions, Spearman correlations | Statistics table for all 41 variables (filter by group and continent), one variable in detail and by continent, all distributions, clickable correlation grid, the countries behind any correlation by continent, variable dictionary |
 | 2 Locate | Where | Where is risk concentrated? | Global and local Moran's I | Cluster map and Moran scatterplot for overall risk or any hazard or weakness (floods, drought, cyclones, conflict, food security...), and Moran's I for every INFORM variable |
-| 3 Explain | Why | What explains risk, and does geography still matter? | Regression on wealth, Lagrange multiplier tests, spatial error model | Wealth and risk by continent (click points to label countries), map of what wealth does not explain, the steps of model choice, model table |
-| 4 Test | How sure | Can we trust the results? | Monte Carlo uncertainty, reliability adjustment, robustness checks | 90% ranges for the 30 highest-risk countries, blind spots, clustering under four versions of the data |
-| 5 Decide | Where to act | Where should action come first? | Bivariate classes and Lee's L | Map where danger meets vulnerability for any of 12 hazards, countries by region, what helps at national level |
+| 3 Detect | Events | Are the disaster events themselves clustered? | Point pattern analysis against complete spatial randomness: kernel density, quadrat test (variance-to-mean ratio, chi-square), nearest-neighbour index (Clark-Evans), G and L functions with simulation envelopes | Density map of every earthquake of magnitude 5.5 or more (1965-2016) for the world or a continent, both tests, the G and L functions, and the link between events per area and the INFORM earthquake score |
+| 4 Explain | Why | What explains risk, and does geography still matter? | Regression on wealth, Lagrange multiplier tests, spatial error model | Wealth and risk by continent (click points to label countries), map of what wealth does not explain, the steps of model choice, model table |
+| 5 Test | How sure | Can we trust the results? | Monte Carlo uncertainty, reliability adjustment, robustness checks | 90% ranges for the 30 highest-risk countries, blind spots, clustering under four versions of the data |
+| 6 Decide | Where to act | Where should action come first? | Bivariate classes and Lee's L | Map where danger meets vulnerability for any of 12 hazards, countries by region, what helps at national level |
 | | Explore | What about one country? | Profile and explanation | Click a country for its profile. "Colour countries by" sets what the profile explains: Overall risk, or any single hazard or weakness. For that score it shows the level compared with other countries, a plain "why this rating", what the score is made of (click a part to drill down), the measured facts behind it (for example people exposed to floods each year), recorded events (people affected by disasters in each of the last three years, drought history, the strongest earthquakes on record, displacement, conflict), and where it fits in the overall score |
 | | Help | How does it work? | | How to open the app (web, R, download), three ways to use it, every page and control, the words used, quick fixes |
 
-The five step tabs in the top bar are numbered 1 to 5, and under every page title a "How to use this page" line says what to click. Every page opens with a one-sentence answer computed from the data. Method details are in the collapsed "Method and interpretation" box at the bottom of each page.
+The six step tabs in the top bar are numbered 1 to 6, and under every page title a "How to use this page" line says what to click. Every page opens with a one-sentence answer computed from the data. Method details are in the collapsed "Method and interpretation" box at the bottom of each page.
 
 ## Figures for the report
 
@@ -53,10 +56,12 @@ The Overview page has a button that downloads every figure in publication qualit
 | 6 | Correlation matrix of the main variables |
 | 7 | Local Moran's I cluster map |
 | 8 | Moran scatterplot |
-| 9 | Risk against GDP per person, by continent |
-| 10 | Regression residual map |
-| 11 | Uncertainty ranges, 30 highest-risk countries |
-| 12 | Double burden map |
+| 9 | Kernel density of earthquakes |
+| 10 | G and L functions of earthquakes |
+| 11 | Risk against GDP per person, by continent |
+| 12 | Regression residual map |
+| 13 | Uncertainty ranges, 30 highest-risk countries |
+| 14 | Double burden map |
 
 ## Layout
 
@@ -73,6 +78,7 @@ Before each analysis runs, the countries are checked for every variable that ana
 | Page | Needs | Currently excluded |
 |---|---|---|
 | Where | The chosen indicator | None |
+| Events | Earthquake locations and magnitudes (no gaps); regions with fewer than 20 events are not tested | Africa at magnitude 6.5 and above (13 and 4 events) |
 | Data | Nothing: statistics use every available value and report what is missing | None |
 | Why | The outcome and GDP per person | 29 countries without GDP (mostly small island states, plus Eritrea, Somalia, South Sudan and Sudan) |
 | How sure | INFORM Risk, the three pillars and the Lack of Reliability index | Tajikistan (no reliability score) |
@@ -124,12 +130,15 @@ app.R             top bar and navigation
 R/core/           colours, cards, downloads, maps, data store, page registry
 R/analysis/       statistics as plain R functions (no Shiny)
 docs/             system architecture, app logic and wireframes
-scripts/          prepare_data.R (raw to data/), prepare_indicators.R (indicator facts and earthquakes), precompute_results.R (all results)
-R/views/          one file per page: 00_overview, 01_data, 02_where, 03_why, 04_sure, 05_act, 06_explore, 07_help
+scripts/          prepare_data.R (raw to data/), prepare_indicators.R (indicator facts and earthquakes),
+                  precompute_points.R (point pattern results, uses spatstat), precompute_results.R (all other results),
+                  make_globe.R (the line globe on the Overview)
+R/views/          one file per page: 00_overview, 01_data, 02_where, 02b_events, 03_why, 04_sure, 05_act, 06_explore, 07_help
 R/core/variables.R       the variable dictionary and continent lookup
 R/analysis/explain.R     why a country gets each score: facts, parts, recorded events
+R/analysis/points.R      the point pattern step: reads the stored results and draws its figures
 R/analysis/figures.R     publication figures and descriptive statistics (used on screen and for export)
-www/              styles and navigation script
+www/              styles, navigation script, logo.svg (the app logo), globe-lines.svg
 data/             processed data
 ```
 

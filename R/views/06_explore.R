@@ -159,6 +159,39 @@ register_view(
           ggplot2::theme(plot.margin = ggplot2::margin(4, 8, 2, 2), panel.grid.major.x = ggplot2::element_blank())
       }, height = 130, res = 96)
 
+      # Where the country sits among all countries: a histogram of the chosen
+      # score with the country marked, and its value beside its continent and the world.
+      output$hist <- renderPlot({
+        iso <- sel(); fv <- focus(); req(iso)
+        v <- inf[[fv]]; x <- inf[[fv]][inf$iso3 == iso]; req(!is.na(x))
+        d <- data.frame(v = v[!is.na(v)])
+        ten <- min(d$v) >= 0 && max(d$v) <= 10           # INFORM scores; data-quality measures use their own range
+        lim <- if (ten) c(0, 10) else range(d$v)
+        ggplot2::ggplot(d, ggplot2::aes(v)) +
+          ggplot2::geom_histogram(binwidth = diff(lim) / 20, boundary = lim[1], fill = "#CFE3D8", colour = "#FFFFFF") +
+          ggplot2::geom_vline(xintercept = stats::median(d$v), colour = "#6B7280", linetype = "dashed", linewidth = 0.5) +
+          ggplot2::geom_vline(xintercept = x, colour = "#B91C1C", linewidth = 1.1) +
+          ggplot2::annotate("label", x = x, y = Inf, vjust = 1.2, label = sprintf("%s %s", inf$country[inf$iso3 == iso], fmt_num(x, 1)),
+                            size = 3.1, colour = "#B91C1C", fill = "white", label.size = 0) +
+          ggplot2::scale_x_continuous(limits = lim + c(-1, 1) * diff(lim) / 40, breaks = if (ten) 0:5 * 2 else ggplot2::waiver()) +
+          ggplot2::labs(x = NULL, y = "Countries") + theme_georisk(9.5) +
+          ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(), plot.margin = ggplot2::margin(4, 8, 2, 2))
+      }, height = 150, res = 96, bg = "transparent")
+      output$compare <- renderPlot({
+        iso <- sel(); fv <- focus(); req(iso)
+        r <- inf[inf$iso3 == iso, ]; cont <- r$continent
+        d <- data.frame(who = c(r$country, paste(cont, "median"), "World median"),
+                        v = c(r[[fv]], stats::median(inf[[fv]][inf$continent %in% cont], na.rm = TRUE), stats::median(inf[[fv]], na.rm = TRUE)))
+        d$who <- factor(d$who, levels = rev(d$who)); d$me <- c(TRUE, FALSE, FALSE)
+        ggplot2::ggplot(d, ggplot2::aes(v, who, fill = me)) +
+          ggplot2::geom_col(width = 0.62) +
+          ggplot2::geom_text(ggplot2::aes(label = fmt_num(v, 1)), hjust = -0.25, size = 3.2, colour = "#111827") +
+          ggplot2::scale_fill_manual(values = c(`TRUE` = "#B91C1C", `FALSE` = "#9DBFAE"), guide = "none") +
+          ggplot2::scale_x_continuous(limits = c(0, 1.12 * max(c(10 * (max(inf[[fv]], na.rm = TRUE) <= 10), d$v), na.rm = TRUE)), expand = c(0, 0)) +
+          ggplot2::labs(x = NULL, y = NULL) + theme_georisk(9.5) +
+          ggplot2::theme(panel.grid.major.y = ggplot2::element_blank(), plot.margin = ggplot2::margin(2, 8, 2, 2))
+      }, height = 112, res = 96, bg = "transparent")
+
       # ---- panel pieces -------------------------------------------------
       goto_score <- function(v) sprintf("Shiny.setInputValue('%s', '%s', {priority: 'event'})", ns("colour_to"), v)
       score_col <- function(v, x, lvl) if (v == "inform_risk") GR$class_cols[[lvl]] else LEVEL_COLS[[lvl]]
@@ -309,6 +342,12 @@ register_view(
                                         sprintf("Overall risk: %.1f (%s)", r$inform_risk, as.character(r$risk_class)), icon("arrow-right"))),
           focus_box(r, e),
           why_box(e),
+          h4(class = "xh", "Where it sits among all countries"),
+          div(class = "xsub", style = "margin:-2px 0 4px;", sprintf("Each bar counts countries by their %s score; red: %s; dashed: world median.",
+                                                                   if (overall) "overall risk" else lc(e$label), r$country)),
+          plotOutput(ns("hist"), height = "150px"),
+          h4(class = "xh", "Compared with its continent and the world"),
+          plotOutput(ns("compare"), height = "112px"),
           if (overall) tagList(
             h4(class = "xh", "The three parts of risk"),
             div(class = "xsub", style = "margin:-2px 0 6px;", "Overall risk combines these three. Thin dark line: world median."),

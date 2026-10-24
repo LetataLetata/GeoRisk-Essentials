@@ -105,11 +105,9 @@ register_view(
         if (!"inform_risk" %in% v) v <- c("inform_risk", v)
         v[vapply(v, function(z) sum(!is.na(d_r()[[z]])) > 5 && stats::sd(d_r()[[z]], na.rm = TRUE) > 0, logical(1))]
       })
-      # On the correlation matrix, INFORM Risk is called "Overall risk".
-      corr_lab <- function(v) { l <- lab(v); l[v == "inform_risk"] <- "Overall risk"; l }
-      corr_plot <- reactive(fig_corr_matrix(d_r(), corr_vars(), corr_lab(corr_vars())))
+      corr_plot <- reactive(fig_corr_matrix(d_r(), corr_vars(), lab(corr_vars())))
       csrc <- session$ns("corr")
-      output[["corr-plot"]] <- plotly::renderPlotly(corr_plotly(d_r(), corr_vars(), corr_lab(corr_vars()), csrc))
+      output[["corr-plot"]] <- plotly::renderPlotly(corr_plotly(d_r(), corr_vars(), lab(corr_vars()), csrc))
       moduleServer("corr", function(input2, output2, session2) {
         register_downloads(output2, corr_plot, function() paste0("correlations_", input$group),
                            function() sprintf("Spearman correlations between %s, %s", if (input$group == "all") "the main variables" else lc(input$group), where_txt()),

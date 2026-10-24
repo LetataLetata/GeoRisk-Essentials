@@ -33,10 +33,6 @@ country_weights <- function(store, iso3, type = c("knn", "distance", "contiguity
        mean_links = mean(spdep::card(nb)), n = length(nb))
 }
 
-weights_label <- function(w) switch(w$type,
-  knn = sprintf("%d nearest neighbours (symmetric, great-circle)", w$k),
-  distance = sprintf("Distance band %s km (islands linked to nearest country)", format(w$dist_km, big.mark = ",")),
-  contiguity = "Queen contiguity, islands linked to nearest country")
 
 subset_lw <- function(lw, ok) if (all(ok)) lw else spdep::subset.listw(lw, ok, zero.policy = TRUE)
 
@@ -67,28 +63,7 @@ local_moran <- function(x, lw, alpha = 0.05, adjust = "none") {
   out
 }
 
-getis_ord <- function(x, nb) {
-  ok <- !is.na(x)
-  nb2 <- if (all(ok)) nb else spdep::subset.nb(nb, ok)
-  lw <- spdep::nb2listw(spdep::include.self(nb2), style = "B", zero.policy = TRUE)
-  g <- as.numeric(spdep::localG(x[ok], lw, zero.policy = TRUE))
-  cls <- cut(g, c(-Inf, -2.576, -1.96, -1.645, 1.645, 1.96, 2.576, Inf),
-             labels = c("Cold spot 99%", "Cold spot 95%", "Cold spot 90%", "Not significant",
-                        "Hot spot 90%", "Hot spot 95%", "Hot spot 99%"))
-  z <- rep(NA_real_, length(x)); z[ok] <- g
-  cl <- factor(rep(NA, length(x)), levels = names(GR$gi_cols)); cl[ok] <- as.character(cls)
-  data.frame(gi_z = z, gi_class = cl)
-}
 
-correlogram <- function(x, nb, order = 6) {
-  ok <- !is.na(x)
-  nb2 <- if (all(ok)) nb else spdep::subset.nb(nb, ok)
-  cg <- spdep::sp.correlogram(nb2, x[ok], order = order, method = "I", style = "W", zero.policy = TRUE)
-  r <- cg$res
-  data.frame(lag = seq_len(nrow(r)), I = r[, 1], expected = r[, 2], sd = sqrt(r[, 3]),
-             z = (r[, 1] - r[, 2]) / sqrt(r[, 3]),
-             p = 2 * stats::pnorm(-abs((r[, 1] - r[, 2]) / sqrt(r[, 3]))))
-}
 
 # ------------------------------------------------------------ regression --
 vif <- function(X) {
@@ -177,8 +152,3 @@ spatial_regression <- function(d, response, predictors, lw, standardise = TRUE, 
        impacts = impacts, residuals = resid, vif = vif(X), diagnostics = diag, standardised = standardise)
 }
 
-# Components of a composite index (to warn about circular regressions).
-descendants <- function(dict, v) {
-  kids <- dict$var[!is.na(dict$parent) & dict$parent == v]
-  unique(c(kids, unlist(lapply(kids, function(k) descendants(dict, k)))))
-}

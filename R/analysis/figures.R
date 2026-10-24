@@ -179,7 +179,7 @@ export_all_figures <- function(store, dir, progress = function(i, n, label) NULL
   cm <- c(core, "drought", "river_flood", "food_security", "governance", "log_gdp_pc", "reliability_index")
   L <- function(v) unname(store$labels[v])
   figs <- list(
-    list("Analytical workflow: five steps from data to decision", fig_workflow(), "Each step answers one question with the method shown; its output feeds the next step.", 10, 3.6),
+    list("Analytical workflow: six steps from data to decision", fig_workflow(), "Each step answers one question with the method shown; its output feeds the next step.", 12, 3.8),
     list("INFORM Risk class by country, 2026", static_choropleth(store, sfd$risk_class, "Risk class", "factor", GR$class_cols), src, 10, 5.6),
     list("Distribution of INFORM Risk and its three parts", fig_distributions(d, core, L(core)), paste("Dashed line: median. n = 191 countries.", src), 9, 5),
     list("Distribution of the hazard indicators", fig_distributions(d, haz, L(haz)), paste("Distribution of each hazard score across 191 countries; dashed line: median.", src), 10, 7),
@@ -188,6 +188,11 @@ export_all_figures <- function(store, dir, progress = function(i, n, label) NULL
     list("Clusters of INFORM Risk (Local Moran's I)", static_choropleth(store, cw$expand(lisa$cluster), "Local Moran's I cluster", "factor", GR$lisa_cols),
          sprintf("Global Moran's I = %.3f (permutation p %s); local clusters p < 0.05 after false discovery rate correction; 5 nearest-neighbour weights. %s", gm$I, fmt_p(gm$p_perm), src), 10, 5.6),
     list("Moran scatterplot of INFORM Risk", fig_moran_scatter(lisa, cw$data$country, "INFORM Risk"), sprintf("Slope = Moran's I = %.3f. %s", gm$I, src), 6.5, 5.5),
+    if (!is.null(store$points)) list("Kernel density of earthquakes, magnitude 5.5 and above, 1965-2016", fig_pp_density(store, "World", 5.5),
+         { r <- pp_result(store, "World", 5.5); sprintf("Gaussian kernel (bandwidth %.0f km), Mollweide equal-area projection; n = %s. Quadrat test: variance-to-mean ratio %.1f, chi-square p %s. Nearest-neighbour index %.2f (z = %.1f). Source: US Geological Survey.",
+                                                      r$bandwidth_km, format(r$n, big.mark = ","), r$quadrat$vmr, fmt_p(r$quadrat$p), r$nn$r, r$nn$z) }, 10, 5.6),
+    if (!is.null(store$points)) list("G and L functions of earthquakes against complete spatial randomness", patchwork::wrap_plots(fig_pp_G(store, "World", 5.5), fig_pp_L(store, "World", 5.5), ncol = 2),
+         "Red: observed; dashed: complete spatial randomness; grey: envelope of 39 simulations. L function on a random sample of 3,000 events, border correction. Source: US Geological Survey.", 11, 4.6),
     list("INFORM Risk against GDP per person, by continent", fig_scatter_continent(d, "gdp_per_capita", "inform_risk", "GDP per person (US dollars, log scale)", "INFORM Risk (0-10)", log_x = TRUE),
          paste("Line: least-squares fit with 95% confidence band in each continent. Countries without GDP data are excluded.", src2), 10, 6.5),
     list("INFORM Risk not explained by wealth (regression residuals)", static_choropleth(store, cy$expand(unname(stats::residuals(fit$ols))), "Residual (observed minus predicted)", "diverging"),
@@ -197,6 +202,7 @@ export_all_figures <- function(store, dir, progress = function(i, n, label) NULL
     list("Where danger meets vulnerability (double burden)", bivariate_static(store, ca$expand(bc$cls), "Hazard and exposure", "Vulnerability"),
          sprintf("Terciles of hazard and exposure and of vulnerability; Lee's L = %.2f, p %s. %s", lee$L, fmt_p(lee$p), src), 10, 5.6)
   )
+  figs <- Filter(Negate(is.null), figs)
   dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   files <- character(0)
   for (i in seq_along(figs)) {

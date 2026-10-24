@@ -69,7 +69,9 @@ cat("Saved data/inform_indicators.rds:", nrow(values), "countries x", ncol(value
 eq_in <- file.path(raw, "earthquakes.rds")
 if (file.exists(eq_in)) {
   eq <- readRDS(eq_in)
-  eq <- eq[!is.na(eq$iso3), c("date", "year", "lat", "lon", "magnitude", "iso3", "dist_to_land_km")]
+  # All events are kept: the world point pattern uses every one; iso3 (the nearest
+  # country within 100 km) is empty for events far out at sea.
+  eq <- eq[, c("date", "year", "lat", "lon", "magnitude", "iso3", "dist_to_land_km")]
   saveRDS(eq, "data/earthquakes.rds")
-  cat("Saved data/earthquakes.rds:", nrow(eq), "earthquakes linked to a country\n")
+  cat("Saved data/earthquakes.rds:", nrow(eq), "earthquakes,", sum(!is.na(eq$iso3)), "linked to a country\n")
 }

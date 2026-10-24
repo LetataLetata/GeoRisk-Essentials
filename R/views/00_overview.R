@@ -33,12 +33,10 @@ register_view(
     ns <- NS(id)
     tagList(
       div(class = "hero hero-simple",
-        div(class = "hero-kicker", "191 countries  |  INFORM Risk Index 2026"),
-        h1("Where are disasters most dangerous, and where should help go first?"),
-        p(class = "lead hero-uses", "See where disasters, conflict and fragile conditions put people at risk in 191 countries, and why. Use it to inform ",
-          tags$mark("travel advisories", .noWS = "outside"), ", ", tags$mark("business and investment risk screening", .noWS = "outside"), ", ",
-          tags$mark("conflict and security briefings", .noWS = "outside"), ", and ", tags$mark("humanitarian planning", .noWS = "outside"), "."),
-        tags$img(src = "globe.svg", class = "hero-globe", alt = "", `aria-hidden` = "true"),
+        div(class = "hero-kicker", "191 countries  |  INFORM Risk Index 2026  |  Earthquakes 1965-2016"),
+        h1("Global distribution of disasters"),
+        p(class = "lead hero-overview", "Six steps take the data to a decision: describe the indicators, map where risk clusters, test whether the disaster events themselves cluster, explain the pattern, check how far it can be trusted, and find where action should come first."),
+        tags$img(src = "globe-lines.svg", class = "hero-globe", alt = "", `aria-hidden` = "true"),
         div(class = "hero-actions",
             tags$button(type = "button", class = "hero-btn primary", `data-goto` = "data", icon("play"), " Walk through the analysis"),
             tags$button(type = "button", class = "hero-btn", `data-goto` = "explore", icon("magnifying-glass"), " Look up a country"))),
@@ -102,25 +100,31 @@ register_view(
         pop <- sum(c_act$data$population[bc$double], na.rm = TRUE)
         list(gm = gm, n_hh = sum(hh), n_where = nrow(dw), reg = reg, r2 = r2, n_why = c_why$n,
              n_hi = sum(hi), n_bs = nrow(bs), bs_names = bs$country[order(-bs$inform_risk)],
-             pop = pop, pop_share = pop / sum(c_act$data$population, na.rm = TRUE), n_double = sum(bc$double))
+             pop = pop, pop_share = pop / sum(c_act$data$population, na.rm = TRUE), n_double = sum(bc$double),
+             pp = pp_result(store, "World", 5.5), pp_rho = if (!is.null(store$points)) store$points$link[["5.5"]]$rho else NA)
       })
 
       output$cards <- renderUI({
         r <- res()
         div(class = "big-cards",
-          big_card("where", "Step 2: Where", r$n_hh,
+          big_card("where", step_label("where", "Where"), r$n_hh,
                    "high-risk countries sit right next to each other",
                    dot_grid(r$n_where, r$n_hh, "#DC2626"),
                    sprintf("out of %d countries, mostly in %s. Risk crosses borders.", r$n_where, sub(" & ", " and ", r$reg)), "dark"),
-          big_card("why", "Step 3: Why", sprintf("%.0f%%", 100 * r$r2),
+          if (!is.null(r$pp)) big_card("events", step_label("events", "Events"), sprintf("%.0f times", 1 / r$pp$nn$r),
+                   "closer together than chance: earthquakes cluster",
+                   share_bar(r$pp$nn$r, "#DC2626"),
+                   sprintf("The next earthquake is on average %.0f km away; at random it would be %.0f km. Scores agree (rho %.2f).",
+                           r$pp$nn$dobs_km, r$pp$nn$dexp_km, r$pp_rho)),
+          big_card("why", step_label("why", "Why"), sprintf("%.0f%%", 100 * r$r2),
                    "of the differences in risk line up with how rich a country is",
                    share_bar(r$r2, "#16A34A"),
                    "Wealth matters a lot, but not everything: neighbours still share risk."),
-          big_card("sure", "Step 4: How sure", r$n_bs,
+          big_card("sure", step_label("sure", "How sure"), r$n_bs,
                    "high-risk countries have weak data",
                    dot_grid(r$n_hi, r$n_bs, "#F59E0B", hollow = TRUE),
                    sprintf("out of %d high-risk countries. Check these on the ground.", r$n_hi)),
-          big_card("act", "Step 5: Where to act", sprintf("%.1f billion", r$pop / 1e9),
+          big_card("act", step_label("act", "Where to act"), sprintf("%.1f billion", r$pop / 1e9),
                    "people live where big dangers meet poverty and weak services",
                    share_bar(r$pop_share, "#7C3AED"),
                    sprintf("About %.0f in every 100 people, in %d countries.", 100 * r$pop_share, r$n_double)))
@@ -152,8 +156,10 @@ register_view(
       # The technical version of the four findings, for the report box.
       output$tech <- renderUI({
         r <- res()
-        p(strong("The four findings in technical terms. "),
+        p(strong("The findings in technical terms. "),
           sprintf("Where: global Moran's I = %.3f (permutation p %s); %d countries in significant High-High clusters (local Moran's I, p < 0.05, false discovery rate). ", r$gm$I, fmt_p(r$gm$p_perm), r$n_hh),
+          if (!is.null(r$pp)) sprintf("Events: %s earthquakes of magnitude 5.5 and above (1965-2016) depart from complete spatial randomness (quadrat variance-to-mean ratio %.1f, chi-square p %s; Clark-Evans nearest-neighbour index %.2f, z = %.1f); recorded earthquakes per land area correlate with the INFORM earthquake score (Spearman rho = %.2f). ",
+                                      format(r$pp$n, big.mark = ","), r$pp$quadrat$vmr, fmt_p(r$pp$quadrat$p), r$pp$nn$r, r$pp$nn$z, r$pp_rho),
           sprintf("Why: log GDP per person explains R squared = %.2f of the variation in INFORM Risk (n = %d); residuals remain spatially autocorrelated, so a spatial error model is preferred. ", r$r2, r$n_why),
           sprintf("How sure: %d of %d High or Very High risk countries have a lack of reliability above 5 or more than 20%% imputed indicators (%s). ", r$n_bs, r$n_hi, paste(r$bs_names, collapse = ", ")),
           sprintf("Where to act: %d countries in the top tercile for both hazard and exposure and vulnerability, home to %s people.", r$n_double, fmt_pop(r$pop)))
@@ -169,8 +175,8 @@ register_view(
       observeEvent(click(), { shared$country(click()$id); shared$goto("explore") })
 
       output$dl_workflow <- downloadHandler("Figure_01_workflow.png", function(f)
-        save_plot(fig_workflow() + ggplot2::labs(title = "Analytical workflow: five steps from data to decision",
-                                                 caption = "Each step answers one question with the method shown; its output feeds the next step."), f, "png", 10, 3.6))
+        save_plot(fig_workflow() + ggplot2::labs(title = "Analytical workflow: six steps from data to decision",
+                                                 caption = "Each step answers one question with the method shown; its output feeds the next step."), f, "png", 12, 3.8))
 
       output$figs <- downloadHandler(
         function() paste0("GEORISK_Observatory_figures_", format(Sys.Date(), "%Y%m%d"), ".zip"),

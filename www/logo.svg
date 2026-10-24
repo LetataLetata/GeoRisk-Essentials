@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GEORISK Observatory logo">
+  <title>GEORISK Observatory</title>
+  <circle cx="32" cy="32" r="31" fill="#123B2F"/>
+  <!-- observing arc: the watch kept around the globe -->
+  <path d="M32 5.5 A26.5 26.5 0 0 1 58.5 32" fill="none" stroke="#86EFAC" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="58.5" cy="32" r="2.2" fill="#86EFAC"/>
+  <!-- the globe -->
+  <circle cx="32" cy="32" r="19" fill="none" stroke="#E7F5EC" stroke-width="2.2"/>
+  <ellipse cx="32" cy="32" rx="8" ry="19" fill="none" stroke="#E7F5EC" stroke-width="1.4" opacity="0.6"/>
+  <path d="M16.5 21 H47.5 M16.5 43 H47.5" fill="none" stroke="#E7F5EC" stroke-width="1.2" opacity="0.4"/>
+  <!-- risk: a pulse along the equator -->
+  <path d="M13 32 H24 L27.5 24 L32.5 41 L36.5 27.5 L39 32 H51" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

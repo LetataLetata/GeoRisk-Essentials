@@ -1,7 +1,8 @@
 # GEORISK Observatory
-# A focused version of the GeoRisk dashboard built around five questions:
+# A focused version of the GeoRisk dashboard built around six questions:
 #   What is in the data?                         (descriptive statistics)
 #   Where is disaster risk concentrated?        (spatial autocorrelation)
+#   Are the events themselves clustered?       (point pattern analysis)
 #   What explains it, and does geography matter? (spatial regression)
 #   How sure can we be?                          (uncertainty and robustness)
 #   Where should action come first?              (double burden)
@@ -39,7 +40,7 @@ pill <- function(v, active = FALSE) {
   n <- match(v$id, STEPS$id)
   tags$button(class = paste("gr-pill", if (active) "active", if (v$id == "help") "help-pill"),
               `data-target` = v$id, type = "button",
-              title = if (!is.na(n)) sprintf("Step %d of 5: %s", n, STEPS$question[n]) else v$title,
+              title = if (!is.na(n)) sprintf("Step %d of %d: %s", n, nrow(STEPS), STEPS$question[n]) else v$title,
               if (!is.na(n)) span(class = "pill-n", n) else icon(v$icon), span(v$title))
 }
 
@@ -95,31 +96,35 @@ welcome_guide <- function() {
 }
 
 # The welcome screen: shown each time the app opens, before the Overview.
-# A big welcome, the logo and name, what the dashboard can be used for, and a
-# Continue arrow (www/app.js hides it; the first-visit tour follows).
+# Minimal and open: the two logos, a large "Welcome", the name, one sentence
+# on what the dashboard is for, and Continue. The team is listed at the foot.
+# www/app.js hides it; the first-visit tour follows.
+wits_logo <- function() {
+  # The official University of the Witwatersrand logo, from www/wits_logo.png
+  # (or .svg). Until that file is added, the university's name shows instead.
+  for (f in c("wits_logo.png", "wits_logo.svg"))
+    if (file.exists(file.path("www", f))) return(tags$img(src = f, class = "wits-logo", alt = "University of the Witwatersrand, Johannesburg"))
+  div(class = "wits-name", "University of the", tags$br(), "Witwatersrand, Johannesburg")
+}
 welcome_screen <- function() {
   div(id = "welcome", class = "welcome", role = "dialog", `aria-modal` = "true", `aria-labelledby` = "welcome-title",
+    div(class = "welcome-top",
+      div(class = "welcome-logos", tags$img(src = "logo.svg", class = "welcome-logo", alt = "GEORISK Observatory logo"),
+          span(class = "welcome-logo-sep"), wits_logo())),
     div(class = "welcome-inner",
       h1(id = "welcome-title", class = "welcome-big", "Welcome"),
-      div(class = "welcome-logos",
-        div(class = "welcome-logo", icon("earth-africa")),
-        span(class = "welcome-logo-sep"),
-        # The official University of the Witwatersrand logo, from www/wits_logo.png
-        # (or .svg). Until that file is added, the university's name shows instead.
-        if (file.exists("www/wits_logo.png")) tags$img(src = "wits_logo.png", class = "wits-logo", alt = "University of the Witwatersrand, Johannesburg")
-        else if (file.exists("www/wits_logo.svg")) tags$img(src = "wits_logo.svg", class = "wits-logo", alt = "University of the Witwatersrand, Johannesburg")
-        else div(class = "wits-name", "University of the", tags$br(), "Witwatersrand, Johannesburg")),
       div(class = "welcome-name", "GEORISK", span(" Observatory")),
+      span(class = "welcome-rule"),
       p(class = "welcome-text",
         "See where disasters, conflict and fragile conditions put people at risk in 191 countries, and why. ",
         "Use it to inform travel advisories, business and investment risk screening, conflict and security briefings, ",
         "and humanitarian planning."),
-      tags$button(type = "button", id = "welcome-go", class = "welcome-go", "Continue", icon("arrow-right")),
-      div(class = "welcome-foot", "INFORM Risk Index 2026 (European Commission JRC)  |  national-level data")),
-    div(class = "welcome-team",
-      div(class = "welcome-team-label", "Created by"),
-      div(class = "welcome-team-names", span(class = "nm", "Lerata Lerata"), span(class = "sep", "|"), span(class = "nm", "Crispen Chipimo"),
-          span(class = "sep", "|"), span(class = "nm", "Orifha Makhado"), span(class = "sep", "|"), span(class = "nm", "Buhlebethu Masango"))))
+      tags$button(type = "button", id = "welcome-go", class = "welcome-go", span("Continue"), span(class = "welcome-go-arrow", icon("arrow-right")))),
+    div(class = "welcome-bottom",
+      div(class = "welcome-team", span(class = "welcome-team-label", "Created by"),
+          span(class = "nm", "Lerata Lerata"), span(class = "sep", "|"), span(class = "nm", "Crispen Chipimo"),
+          span(class = "sep", "|"), span(class = "nm", "Orifha Makhado"), span(class = "sep", "|"), span(class = "nm", "Buhlebethu Masango")),
+      div(class = "welcome-foot", "INFORM Risk Index 2026 (European Commission JRC)  |  national-level data")))
 }
 
 ui <- function(req) {
@@ -131,12 +136,13 @@ ui <- function(req) {
     tags$head(
       tags$link(rel = "preconnect", href = "https://fonts.googleapis.com"),
       tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"),
+      tags$link(rel = "icon", type = "image/svg+xml", href = "logo.svg"),
       tags$link(rel = "stylesheet", href = "styles.css"),
       tags$script(src = "app.js")
     ),
     div(class = "app-shell",
       div(class = "topbar",
-        div(class = "brand", title = "Back to the welcome screen", role = "button", tabindex = "0", span(class = "brand-mark", icon("earth-africa")),
+        div(class = "brand", title = "Back to the welcome screen", role = "button", tabindex = "0", tags$img(src = "logo.svg", class = "brand-logo", alt = ""),
             span(class = "brand-name", "GEORISK", span(class = "brand-accent", " Observatory"))),
         div(class = "pill-bar pills-analyst", lapply(seq_along(views), function(i) pill(views[[i]], i == 1))),
         div(class = "layout-tools",
