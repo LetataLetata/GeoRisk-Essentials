@@ -3378,10 +3378,10 @@
       "checksum": "c64272fe3afc208293afa5ea2cc320f4"
     },
     "R/views/00_overview.R": {
-      "checksum": "366cb1b3f411667d88ab0fc6ac012497"
+      "checksum": "c61cefe168f8da3852a9edf21871aa8f"
     },
     "R/views/01_data.R": {
-      "checksum": "0f039d46781422697b4cba2d9a5d79f2"
+      "checksum": "70721df4ab1c39f72a23175639330a2d"
     },
     "R/views/02_where.R": {
       "checksum": "7058e49f4a18a9e3c376f75f747436c8"
@@ -3402,7 +3402,7 @@
       "checksum": "3f38d3b1f2398eeef09670d28504bd33"
     },
     "app.R": {
-      "checksum": "5b7403efb6a874a9ce2cfc967ef07b07"
+      "checksum": "9af7193113e972c093aec7bb73de9de5"
     },
     "data/geography.rds": {
       "checksum": "22906f90ff76901e5e84944c19f410cd"
@@ -3453,7 +3453,7 @@
       "checksum": "d376e89d06a0321a8fe1fc86122ce823"
     },
     "www/styles.css": {
-      "checksum": "fd2a501937d467bb5daeaf82719ef37b"
+      "checksum": "cee0ed68b5fb0d50e82c2adc1595c8e2"
     },
     "R/views/07_help.R": {
       "checksum": "b94796f9d4a2029d3f7a89950dbeb057"
@@ -3466,6 +3466,9 @@
     },
     "data/inform_indicators.rds": {
       "checksum": "abc041840a03e928dacae96604d51138"
+    },
+    "www/globe.svg": {
+      "checksum": "e2fb8cb332cdf1858038143f8f5f623e"
     }
   },
   "users": null

@@ -101,14 +101,25 @@ welcome_screen <- function() {
   div(id = "welcome", class = "welcome", role = "dialog", `aria-modal` = "true", `aria-labelledby` = "welcome-title",
     div(class = "welcome-inner",
       h1(id = "welcome-title", class = "welcome-big", "Welcome"),
-      div(class = "welcome-logo", icon("earth-africa")),
+      div(class = "welcome-logos",
+        div(class = "welcome-logo", icon("earth-africa")),
+        span(class = "welcome-logo-sep"),
+        # The official University of the Witwatersrand logo, from www/wits_logo.png
+        # (or .svg). Until that file is added, the university's name shows instead.
+        if (file.exists("www/wits_logo.png")) tags$img(src = "wits_logo.png", class = "wits-logo", alt = "University of the Witwatersrand, Johannesburg")
+        else if (file.exists("www/wits_logo.svg")) tags$img(src = "wits_logo.svg", class = "wits-logo", alt = "University of the Witwatersrand, Johannesburg")
+        else div(class = "wits-name", "University of the", tags$br(), "Witwatersrand, Johannesburg")),
       div(class = "welcome-name", "GEORISK", span(" Observatory")),
       p(class = "welcome-text",
         "See where disasters, conflict and fragile conditions put people at risk in 191 countries, and why. ",
         "Use it to inform travel advisories, business and investment risk screening, conflict and security briefings, ",
         "and humanitarian planning."),
       tags$button(type = "button", id = "welcome-go", class = "welcome-go", "Continue", icon("arrow-right")),
-      div(class = "welcome-foot", "INFORM Risk Index 2026 (European Commission JRC)  |  national-level data")))
+      div(class = "welcome-foot", "INFORM Risk Index 2026 (European Commission JRC)  |  national-level data")),
+    div(class = "welcome-team",
+      div(class = "welcome-team-label", "Created by"),
+      div(class = "welcome-team-names", span(class = "nm", "Lerata Lerata"), span(class = "sep", "|"), span(class = "nm", "Crispen Chipimo"),
+          span(class = "sep", "|"), span(class = "nm", "Orifha Makhado"), span(class = "sep", "|"), span(class = "nm", "Buhlebethu Masango"))))
 }
 
 ui <- function(req) {

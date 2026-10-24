@@ -727,3 +727,41 @@ body.welcome-on { overflow: hidden; }
 .welcome-go:focus-visible { outline: 3px solid #86EFAC; outline-offset: 4px; }
 .welcome-foot { margin-top: 34px; font-size: 0.8rem; color: rgba(209, 250, 229, 0.7); letter-spacing: 0.03em; }
 .topbar .brand { cursor: pointer; }
+
+/* ===== Overview banner: a real globe instead of the orange ball; the welcome words highlighted */
+.hero-simple::before, .hero-simple::after { display: none; }
+.hero-simple { padding-right: 300px; min-height: 270px; }
+.hero-globe { position: absolute; right: 34px; top: 50%; transform: translateY(-50%); width: 230px; height: 230px; z-index: 0;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35)); animation: globe-in 0.8s ease; pointer-events: none; }
+@keyframes globe-in { from { opacity: 0; transform: translateY(-50%) scale(0.92); } to { opacity: 1; transform: translateY(-50%) scale(1); } }
+.hero-uses { max-width: 760px !important; font-size: 1.08rem !important; line-height: 1.65; color: #F0FDF4 !important; }
+.hero-uses mark { background: rgba(134, 239, 172, 0.22); color: #fff; font-weight: 700; padding: 1px 4px; border-radius: 5px;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+@media (max-width: 900px) {
+  .hero-simple { padding-right: 32px; }
+  .hero-globe { position: static; transform: none; display: block; width: 150px; height: 150px; margin: 4px 0 10px; animation: none; }
+}
+
+/* ===== Welcome screen: white tinted with green */
+.welcome { background: radial-gradient(ellipse at 75% 15%, rgba(134, 239, 172, 0.45), transparent 55%),
+                       radial-gradient(ellipse at 15% 90%, rgba(187, 247, 208, 0.6), transparent 55%),
+                       linear-gradient(160deg, #FFFFFF 0%, #F0FDF4 50%, #DCFCE7 100%);
+  color: #0F3D2E; flex-direction: column; }
+.welcome-big { color: #0F3D2E; }
+.welcome-logos { display: flex; align-items: center; justify-content: center; gap: 22px; margin-bottom: 14px; }
+.welcome-logo { margin: 0; background: #0F3D2E; border-color: #16A34A; color: #86EFAC; box-shadow: 0 10px 34px rgba(22, 163, 74, 0.25); }
+.welcome-logo-sep { width: 1px; height: 70px; background: rgba(15, 61, 46, 0.25); }
+.wits-logo { height: 96px; width: auto; max-width: 220px; object-fit: contain; }
+.wits-name { font-size: 0.95rem; font-weight: 700; line-height: 1.3; color: #0F3D2E; text-align: left; letter-spacing: 0.01em; }
+.welcome-name { color: #0F3D2E; }
+.welcome-name span { color: #16A34A; }
+.welcome-text { color: #1F4D3A; }
+.welcome-go { background: #0F3D2E; color: #fff; box-shadow: 0 12px 30px rgba(15, 61, 46, 0.25); }
+.welcome-go:hover { background: #16A34A; }
+.welcome-go:focus-visible { outline-color: #16A34A; }
+.welcome-foot { color: rgba(15, 61, 46, 0.6); }
+.welcome-team { margin-top: 38px; text-align: center; animation: fadein 0.8s ease; }
+.welcome-team-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #16A34A; margin-bottom: 6px; }
+.welcome-team-names { font-size: 1rem; font-weight: 600; color: #0F3D2E; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; }
+.welcome-team-names .sep { color: rgba(15, 61, 46, 0.3); }
+@media (max-width: 600px) { .welcome-team-names .sep { display: none; } .welcome-team-names { flex-direction: column; } .wits-logo { height: 70px; } }
