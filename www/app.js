@@ -13,6 +13,17 @@ $(function () {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     resizeSoon();
   });
+  // Recolour a map that is already drawn (only colours and labels are sent).
+  Shiny.addCustomMessageHandler('gr-restyle', function (msg) {
+    var w = HTMLWidgets.find('#' + msg.id); if (!w || !w.getMap) return;
+    var map = w.getMap(); if (!map || !map.layerManager) return;
+    for (var i = 0; i < msg.ids.length; i++) {
+      var layer = map.layerManager.getLayer('shape', msg.ids[i]); if (!layer) continue;
+      layer.setStyle({ fillColor: msg.fill[i] });
+      if (msg.labels && layer.getTooltip && layer.getTooltip()) layer.setTooltipContent(msg.labels[i]);
+    }
+  });
+
   Shiny.addCustomMessageHandler('goto', function (target) {
     $('.gr-pill[data-target="' + target + '"]').trigger('click');
   });
@@ -28,8 +39,19 @@ $(function () {
     });
   }
   addFolders(document);
-  new MutationObserver(function (m) { m.forEach(function (r) { r.addedNodes.forEach(function (n) { if (n.nodeType === 1) addFolders(n); }); }); })
-    .observe(document.body, { childList: true, subtree: true });
+  // Shiny adds cards when pages render; check at most once per frame, and ignore
+  // map tiles and chart internals, which change constantly.
+  var pending = false;
+  new MutationObserver(function (m) {
+    if (pending) return;
+    for (var i = 0; i < m.length; i++) {
+      var t = m[i].target;
+      if (t.closest && t.closest('.leaflet-container, .js-plotly-plot, .dataTables_wrapper')) continue;
+      pending = true;
+      window.requestAnimationFrame(function () { pending = false; addFolders(document); });
+      return;
+    }
+  }).observe(document.body, { childList: true, subtree: true });
 
   $(document).on('click', '.fold-btn', function (e) {
     e.stopPropagation();

@@ -31,10 +31,10 @@ register_view(
       sfd <- store$inform_sf
       lab <- reactive(var_label(store, input$var))
       # Missing-data contingency: only countries with a value are analysed, with weights rebuilt for them.
-      chk <- reactive(analysis_data(store, input$var, lab()))
+      chk <- reactive(cached_check(store, input$var, lab()))
       x <- reactive(chk()$data[[input$var]])
-      gm <- reactive(global_moran(x(), chk()$w$lw, 999))
-      lisa <- reactive(local_moran(x(), chk()$w$lw, 0.05, "fdr"))
+      gm <- reactive(cached(paste0("gm:", input$var), global_moran(x(), chk()$w$lw, 999)))
+      lisa <- reactive(cached(paste0("lisa:", input$var), local_moran(x(), chk()$w$lw, 0.05, "fdr")))
       src <- paste("Source:", store$sources$inform)
 
       output$answer <- renderUI({
@@ -49,27 +49,21 @@ register_view(
         tagList(answer_box(HTML(txt)), data_note(chk()))
       })
 
-      map_server("map",
-        leaflet_r = reactive(leaflet_choropleth(store, chk()$expand(lisa()$cluster), "lisa", "Cluster",
-                                                label_extra = sprintf("<br/>%s: %s", lab(), fmt_num(chk()$expand(x()), 1)))),
+      fast_map_server("map", store,
+        style_r = reactive(choropleth_style(store, chk()$expand(lisa()$cluster), "lisa", "Cluster",
+                                            label_extra = sprintf("<br/>%s: %s", lab(), fmt_num(chk()$expand(x()), 1)))),
         static_r = reactive(static_choropleth(store, chk()$expand(lisa()$cluster), "Local Moran's I cluster", "factor", GR$lisa_cols)),
         title = reactive(paste("Clusters of", lc(lab()), "(Local Moran's I)")),
         caption = reactive(sprintf("p < 0.05 after false discovery rate correction; 5 nearest-neighbour weights; %d countries with data (grey: excluded). %s", chk()$n, src)),
         filename = reactive(paste0("clusters_", input$var)))
 
-      chart_server("scatter", reactive(fig_moran_scatter(lisa(), chk()$data$country, lab())), title = reactive(paste("Moran scatterplot:", lc(lab()))),
+      chart_server("scatter", reactive(fig_moran_scatter(lisa(), chk()$data$country, lab())),
+          plotly_r = reactive(moran_plotly(lisa(), chk()$data$country, lab())), title = reactive(paste("Moran scatterplot:", lc(lab()))),
           caption = reactive(sprintf("Slope of the line = Moran's I = %.3f (permutation p %s); n = %d countries. %s", gm()$I, fmt_p(gm()$p_perm), chk()$n, src)),
           filename = reactive(paste0("moran_scatter_", input$var)), width = 6.5, height = 5.5)
 
       # Moran's I for every INFORM variable, computed once.
-      all_moran <- local({
-        vv <- store$vars$var[store$vars$group %in% INFORM_GROUPS]
-        do.call(rbind, lapply(vv, function(v) {
-          c0 <- tryCatch(analysis_data(store, v), error = function(e) NULL); if (is.null(c0)) return(NULL)
-          g <- global_moran(c0$data[[v]], c0$w$lw, 499)
-          data.frame(var = v, label = var_label(store, v), group = store$vars$group[store$vars$var == v], I = g$I, p = g$p_perm, n = c0$n)
-        }))
-      })
+      all_moran <- cached("where:all_moran", moran_all_variables(store))
       chart_server("compare", reactive({
         d <- all_moran; d$label <- factor(d$label, levels = d$label[order(d$I)])
         d$sel <- d$var == input$var

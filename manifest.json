@@ -3336,10 +3336,10 @@
       "checksum": "0e48add90ff414b04bbc226b6c281442"
     },
     "R/analysis/country_facts.R": {
-      "checksum": "fe90bcc9c717d9310e9744eea57acc49"
+      "checksum": "0b7fee92315c1756118d8ecaa969a233"
     },
     "R/analysis/figures.R": {
-      "checksum": "27f874714d2bb89b9f1a2d2905bba703"
+      "checksum": "27c905ac0bcbb481fb92d6c6d6de0caa"
     },
     "R/analysis/harmonise.R": {
       "checksum": "a8ea22a1442dfcd4fb9437c542a44bda"
@@ -3356,11 +3356,14 @@
     "R/analysis/uncertainty.R": {
       "checksum": "6b8102730d6e20fcb562ba2991104ce1"
     },
+    "R/core/cache.R": {
+      "checksum": "a54d1efdf011d4fa1bacb2d33247ceb7"
+    },
     "R/core/components.R": {
-      "checksum": "ffef7961c380d7c402f1c8cee54c9752"
+      "checksum": "4c080460f86ce91f17192b0b04410728"
     },
     "R/core/maps.R": {
-      "checksum": "7c519b237d46a685007bead807925f5c"
+      "checksum": "1943161b22fe0d968518732266da57d1"
     },
     "R/core/registry.R": {
       "checksum": "8937e9da10260dc48d191593c76bb230"
@@ -3375,31 +3378,31 @@
       "checksum": "c64272fe3afc208293afa5ea2cc320f4"
     },
     "R/views/00_overview.R": {
-      "checksum": "4bcae13e6c3ed109feeecc2f6934c6ea"
+      "checksum": "0364722d8e15cd8e8c3fb66ab480e24c"
     },
     "R/views/01_data.R": {
-      "checksum": "38f17880007359bc92c445db65359514"
+      "checksum": "0f039d46781422697b4cba2d9a5d79f2"
     },
     "R/views/02_where.R": {
-      "checksum": "73bb7b17fce7983fa41640218e6c2a2f"
+      "checksum": "7058e49f4a18a9e3c376f75f747436c8"
     },
     "R/views/03_why.R": {
-      "checksum": "480bcb063d899b6883aa2929b5e6f52b"
+      "checksum": "0ee7a463bd4d1ee39d6e1fab7fed9524"
     },
     "R/views/04_sure.R": {
-      "checksum": "a369481996c1b51aa4bf8ee2d38ead5f"
+      "checksum": "a300ba12336850c599bbbfe0af68cf60"
     },
     "R/views/05_act.R": {
-      "checksum": "6180ef2dd2d3e98292d00879e74496a7"
+      "checksum": "6b588739fdb79155ff0f5fb510baa9d0"
     },
     "R/views/06_explore.R": {
-      "checksum": "092f059a159c7bd05d1b387ac3a523fb"
+      "checksum": "6e59168e1c693bee67291df767967668"
     },
     "README.md": {
       "checksum": "b8d74d28e2d6f1f15ae7dd74ab78ea33"
     },
     "app.R": {
-      "checksum": "06cca3c11f1c03ee1372659262b4b241"
+      "checksum": "43739a28dbb0a71d64d5c2dd4b48647b"
     },
     "data/geography.rds": {
       "checksum": "22906f90ff76901e5e84944c19f410cd"
@@ -3423,10 +3426,10 @@
       "checksum": "0b5dc844fe2820bbdc8cc04b20fb9fa8"
     },
     "www/app.js": {
-      "checksum": "80bd6e294db858a2b956824f6e13e703"
+      "checksum": "fc05d06dfcde59fae366501da9576450"
     },
     "www/styles.css": {
-      "checksum": "275de6323cfbe2a9ed5587766fc66e08"
+      "checksum": "4c5c91218fb279894861b610c1178f26"
     }
   },
   "users": null

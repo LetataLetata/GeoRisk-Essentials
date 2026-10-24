@@ -44,15 +44,15 @@ register_view(
       need_data(store, "inform", "owid")
       sfd <- store$inform_sf
       # Each finding uses the same missing-data rule as its own page.
-      c_where <- analysis_data(store, "inform_risk", "INFORM Risk")
-      c_why <- analysis_data(store, c("inform_risk", "log_gdp_pc"), c("INFORM Risk", "GDP per person"), d = store$all)
-      c_sure <- analysis_data(store, c("inform_risk", "hazard_and_exposure", "vulnerability", "lack_of_coping_capacity", "reliability_index"))
-      c_act <- analysis_data(store, c("hazard_and_exposure", "vulnerability"))
+      c_where <- cached_check(store, "inform_risk", "INFORM Risk")
+      c_why <- cached_check(store, c("inform_risk", "log_gdp_pc"), c("INFORM Risk", "GDP per person"), d = store$all, tag = "all")
+      c_sure <- cached_check(store, c("inform_risk", "hazard_and_exposure", "vulnerability", "lack_of_coping_capacity", "reliability_index"))
+      c_act <- cached_check(store, c("hazard_and_exposure", "vulnerability"))
 
       output$findings <- renderUI({
         dw <- c_where$data
-        gm <- global_moran(dw$inform_risk, c_where$w$lw, 999)
-        lisa <- local_moran(dw$inform_risk, c_where$w$lw, 0.05, "fdr")
+        gm <- cached("gm:inform_risk", global_moran(dw$inform_risk, c_where$w$lw, 999))
+        lisa <- cached("lisa:inform_risk", local_moran(dw$inform_risk, c_where$w$lw, 0.05, "fdr"))
         reg <- names(sort(table(dw$wb_region[lisa$cluster %in% "High-High"]), decreasing = TRUE))[1]
         r2 <- summary(stats::lm(inform_risk ~ log_gdp_pc, data = c_why$data))$r.squared
         bs <- blind_spots(c_sure$data, 5)

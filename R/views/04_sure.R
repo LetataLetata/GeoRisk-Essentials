@@ -25,12 +25,12 @@ register_view(
     moduleServer(id, function(input, output, session) {
       need_data(store, "inform")
       # Missing-data contingency: the simulation needs all three pillars and the Lack of Reliability index.
-      chk <- analysis_data(store, c("inform_risk", "hazard_and_exposure", "vulnerability", "lack_of_coping_capacity", "reliability_index"),
+      chk <- cached_check(store, c("inform_risk", "hazard_and_exposure", "vulnerability", "lack_of_coping_capacity", "reliability_index"),
                            c("INFORM Risk", "hazard and exposure", "vulnerability", "lack of coping capacity", "the Lack of Reliability index"))
       inf <- chk$data
       src <- paste("Source:", store$sources$inform, "| Sensitivity analysis by the authors")
-      sim <- reactive(simulate_risk(inf, 1, 1000))
-      rob <- reactive(robustness_table(subset_store(store, inf$iso3), "inform_risk", 1, "world", 4.5))
+      sim <- reactive(cached("sure:sim", simulate_risk(inf, 1, 1000)))
+      rob <- reactive(cached("sure:rob", robustness_table(subset_store(store, inf$iso3), "inform_risk", 1, "world", 4.5)))
       bs <- blind_spots(inf, 5)
 
       output$answer <- renderUI({

@@ -239,3 +239,24 @@ corr_plotly <- function(d, vars, labels, source, method = "spearman") {
   p <- plotly::config(p, displaylogo = FALSE, modeBarButtonsToRemove = c("lasso2d", "select2d", "autoScale2d"))
   plotly::event_register(p, "plotly_click")
 }
+
+# Interactive Moran scatterplot drawn directly in plotly (much faster than
+# converting the ggplot version, which is kept for downloads).
+moran_plotly <- function(l, countries, label) {
+  d <- data.frame(z = l$z, lag = l$lag, cluster = l$cluster, country = countries)
+  d <- d[!is.na(d$z), ]
+  fit <- stats::lm(lag ~ z, d); xs <- range(d$z)
+  cols <- GR$lisa_cols[intersect(names(GR$lisa_cols), unique(d$cluster))]
+  p <- plotly::plot_ly()
+  p <- plotly::add_lines(p, x = xs, y = stats::predict(fit, data.frame(z = xs)), line = list(color = GR$ink, width = 2), hoverinfo = "skip", showlegend = FALSE)
+  for (k in names(cols)) {
+    dk <- d[d$cluster == k, ]
+    p <- plotly::add_markers(p, x = dk$z, y = dk$lag, name = k, marker = list(color = cols[[k]], size = 9, line = list(color = "white", width = 0.6)),
+                             text = sprintf("%s<br>%s<br>Own value (standardised): %.2f<br>Neighbours' average: %.2f", dk$country, k, dk$z, dk$lag), hoverinfo = "text")
+  }
+  p <- plotly::layout(p, xaxis = list(title = paste("Country's own", lc(label), "(standardised)"), zeroline = TRUE, zerolinecolor = "#D1D5DB", gridcolor = "#EDF1EF"),
+                      yaxis = list(title = "Average of its neighbours (spatial lag)", zeroline = TRUE, zerolinecolor = "#D1D5DB", gridcolor = "#EDF1EF"),
+                      legend = list(orientation = "h", x = 0, y = 1.06), font = list(family = GR$font, size = 12, color = GR$text),
+                      margin = list(l = 10, r = 10, t = 10, b = 10), paper_bgcolor = "rgba(0,0,0,0)", plot_bgcolor = "rgba(0,0,0,0)")
+  plotly::config(p, displaylogo = FALSE, modeBarButtonsToRemove = c("lasso2d", "select2d", "autoScale2d"))
+}

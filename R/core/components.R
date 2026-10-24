@@ -276,3 +276,31 @@ continent_scatter_server <- function(id, data_r, x_r, y_r, xlab_r, ylab_r, log_x
 }
 
 `%||%` <- function(a, b) if (is.null(a)) b else a
+
+# ----------------------------------------------------------- fast map card --
+# Same card as map_ui/map_server, but the country shapes are sent once; when a
+# setting changes only colours, labels and legend are updated.
+fast_map_server <- function(id, store, style_r, static_r, title, caption = "", filename = id, subtitle_r = NULL,
+                            width = 10, height = 5.6) {
+  moduleServer(id, function(input, output, session) {
+    output$map <- leaflet::renderLeaflet(draw_styled_map(store, isolate(style_r())))
+    observeEvent(style_r(), restyle_map(session, "map", store, style_r()), ignoreInit = TRUE)
+    if (!is.null(subtitle_r)) output$sub <- renderUI(subtitle_r())
+    register_downloads(output, static_r, as_fun(filename), as_fun(title), as_fun(caption), width, height)
+    reactive(input$map_shape_click)
+  })
+}
+
+# Static (image) chart card for charts that need no hovering, such as many
+# small panels: much faster to draw than an interactive chart.
+image_chart_ui <- function(id, title, subtitle = NULL, height = 520) {
+  ns <- NS(id)
+  gr_card(title = title, subtitle = subtitle, tools = download_menu(ns), class = "chart-card",
+          plotOutput(ns("img"), height = height))
+}
+image_chart_server <- function(id, plot_r, title, caption = "", filename = id, width = 10, height = 8) {
+  moduleServer(id, function(input, output, session) {
+    output$img <- renderPlot(suppressWarnings(print(plot_r())), res = 96)
+    register_downloads(output, plot_r, as_fun(filename), as_fun(title), as_fun(caption), width, height)
+  })
+}

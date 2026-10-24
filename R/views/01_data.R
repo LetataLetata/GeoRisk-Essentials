@@ -3,6 +3,9 @@
 # comparisons, correlations (click a cell to see the countries) and the
 # variable dictionary.
 
+KEY_VARS <- c("inform_risk", "hazard_and_exposure", "vulnerability", "lack_of_coping_capacity", "river_flood", "drought",
+              "tropical_cyclone", "earthquake", "current_conflict_intensity", "food_security", "gdp_per_capita", "reliability_index")
+
 register_view(
   id = "data", title = "Data", mode = "analyst", icon = "table", order = 5,
   ui = function(id, store) {
@@ -19,7 +22,7 @@ register_view(
           selectInput(ns("var"), NULL, variable_choices(store), selected = "inform_risk", width = "320px"),
           plotly::plotlyOutput(ns("dist-plot"), height = 360)),
         chart_ui(ns("box"), "The same variable by continent", "Box: middle half of countries and the median. Points: countries.", height = 410)),
-      chart_ui(ns("all"), "All distributions in this group", "Dashed line: median", height = 520),
+      image_chart_ui(ns("all"), "Distributions in this group", "Dashed line: median. With 'All variables' selected, the 12 key variables are shown; choose a group for all of its variables.", height = 520),
       gr_card(title = "How the variables relate", subtitle = "Spearman rank correlation. Click any cell to see the countries behind it, below.",
               tools = download_menu(NS(ns("corr"))), plotly::plotlyOutput(ns("corr-plot"), height = 560)),
       continent_scatter_ui(ns("pair"), "The countries behind a correlation, by continent",
@@ -85,9 +88,12 @@ register_view(
         caption = paste("Boxes: median and interquartile range; points: countries.", src),
         filename = reactive(paste0("by_continent_", input$var)), width = 8, height = 5)
 
-      chart_server("all", reactive({
-        vi <- vi_r(); fig_distributions(d_r(), vi$var, vi$label)
-      }), title = reactive(sprintf("Distributions: %s, %s", if (input$group == "all") "all variables" else lc(input$group), where_txt())),
+      image_chart_server("all", reactive({
+        vi <- vi_r()
+        # All 41 at once is too many panels to read (and slow to draw); show the key ones.
+        if (input$group == "all") vi <- store$vars[match(KEY_VARS, store$vars$var), ]
+        fig_distributions(d_r(), vi$var, vi$label)
+      }), title = reactive(sprintf("Distributions: %s, %s", if (input$group == "all") "key variables" else lc(input$group), where_txt())),
           caption = paste("Dashed line: median.", src), filename = reactive(paste0("distributions_", input$group)), width = 10, height = 8)
 
       # Correlation matrix; clicking a cell sends the pair to the scatter below.

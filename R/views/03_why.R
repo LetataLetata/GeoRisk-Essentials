@@ -35,8 +35,8 @@ register_view(
       preds <- "log_gdp_pc"
       lab <- reactive(var_label(store, input$y))
       # Missing-data contingency: countries without the outcome or GDP are left out, weights rebuilt for the rest.
-      chk <- reactive(analysis_data(store, c(input$y, preds), c(lab(), "GDP per person"), d = dat))
-      fit <- reactive(spatial_regression(chk()$data, input$y, preds, chk()$w$lw, standardise = TRUE))
+      chk <- reactive(cached_check(store, c(input$y, preds), c(lab(), "GDP per person"), d = dat, tag = "all"))
+      fit <- reactive(cached(paste0("fit:", input$y), spatial_regression(chk()$data, input$y, preds, chk()$w$lw, standardise = TRUE)))
       src <- paste0("Sources: ", store$sources$inform, "; ", store$sources$owid, ".")
 
       output$answer <- renderUI({
@@ -58,9 +58,9 @@ register_view(
         filename = reactive(paste0("wealth_by_continent_", input$y)))
 
       rvec <- reactive(chk()$expand(unname(stats::residuals(fit()$ols))))
-      map_server("resid",
-        leaflet_r = reactive(leaflet_choropleth(store, rvec(), "residual", "Unexplained",
-                                                label_extra = "<br/><i>Positive: riskier than its wealth predicts</i>")),
+      fast_map_server("resid", store,
+        style_r = reactive(choropleth_style(store, rvec(), "residual", "Unexplained",
+                                            label_extra = "<br/><i>Positive: riskier than its wealth predicts</i>")),
         static_r = reactive(static_choropleth(store, rvec(), "Residual (observed minus predicted)", "diverging")),
         title = reactive(sprintf("%s not explained by wealth (regression residuals)", lab())),
         caption = reactive(sprintf("Ordinary regression residuals (grey: excluded, missing data); Moran's I of residuals = %.2f, p %s. %s",

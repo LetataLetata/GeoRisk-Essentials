@@ -9,7 +9,7 @@ FACTS_CACHE <- new.env()
 FACTS_STATE <- new.env()
 FACTS_STATE$offline_until <- Sys.time() - 1
 
-fetch_json <- function(u, timeout = 5) {
+fetch_json <- function(u, timeout = 3) {
   if (Sys.time() < FACTS_STATE$offline_until) return(NULL)
   res <- tryCatch({
     if (requireNamespace("curl", quietly = TRUE)) {

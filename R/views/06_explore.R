@@ -90,9 +90,25 @@ register_view(
           draw_selected(isolate(sel()))
       })
 
+      # Changing the colouring only recolours the shapes already on the map; the
+      # shapes are redrawn only when switching to or from "just the map" or when
+      # the colour strength changes (their hover style depends on both).
+      last <- reactiveVal(NULL)
       observeEvent(list(input$colour, input$opacity), {
-        leaflet::leafletProxy("map") |> draw_countries(input$colour, input$opacity) |> draw_selected(sel())
+        prev <- last(); last(list(colour = input$colour, opacity = input$opacity))
+        quick <- !is.null(prev) && identical(prev$opacity, input$opacity) && prev$colour != "none" && input$colour != "none"
+        if (quick) {
+          f <- fill_spec(input$colour); v <- sfd[[input$colour]]
+          lab <- sprintf("<div class='map-tip'><b>%s</b><br/>%s: <b>%s</b><br/><i>Click for the country profile</i></div>", sfd$country, f$title,
+                         if (is.numeric(v)) fmt_num(v, 2) else as.character(v))
+          session$sendCustomMessage("gr-restyle", list(id = session$ns("map"), ids = sfd$iso3, fill = f$cols, labels = lab))
+          leaflet::leafletProxy("map") |> leaflet::removeControl("legend") |>
+            leaflet::addLegend("bottomleft", pal = f$pal, values = f$values, title = f$title, opacity = 0.95, layerId = "legend")
+        } else {
+          leaflet::leafletProxy("map") |> draw_countries(input$colour, input$opacity) |> draw_selected(sel())
+        }
       }, ignoreInit = TRUE)
+      observeEvent(TRUE, last(list(colour = isolate(input$colour), opacity = isolate(input$opacity))), once = TRUE)
 
       choose <- function(iso, fly = TRUE) {
         if (is.null(iso) || !nzchar(iso) || !iso %in% sfd$iso3) return()

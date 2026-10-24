@@ -79,3 +79,47 @@ static_choropleth <- function(store, values, legend_title, fill_type = "continuo
   attr(p, "export_data") <- d
   p
 }
+
+# ------------------------------------------------------------ fast maps --
+# Colours, hover labels and legend for one choropleth, aligned with
+# store$inform_sf. Used to draw a map once and then only recolour it.
+choropleth_style <- function(store, values, var, title, label_extra = NULL) {
+  sf <- store$inform_sf
+  pal <- pal_for(var, values)
+  lab <- sprintf("<div class='map-tip'><b>%s</b><br/>%s: <b>%s</b>%s</div>", sf$country, title,
+                 if (is.numeric(values)) fmt_num(values, 2) else as.character(values),
+                 if (is.null(label_extra)) "" else label_extra)
+  lab[is.na(values)] <- sprintf("<div class='map-tip'><b>%s</b><br/><i>No data: excluded from this analysis</i></div>", sf$country[is.na(values)])
+  legend_vals <- if (is.numeric(values)) values else factor(levels(values), levels = levels(values))
+  list(fill = pal(values), label = lab, legend = list(pal = pal, values = legend_vals, title = title))
+}
+
+bivariate_style <- function(store, cls, labels, hz_lab, vu_lab) {
+  sf <- store$inform_sf
+  fill <- ifelse(is.na(cls), "#D1D5DB", BIVAR_COLS[as.character(cls)])
+  tip <- sprintf("<div class='map-tip'><b>%s</b><br/>%s</div>", sf$country, ifelse(is.na(labels), "<i>No data: excluded from this analysis</i>", labels))
+  list(fill = unname(fill), label = tip, legend_html = bivariate_legend_html(hz_lab, vu_lab))
+}
+
+add_style_legend <- function(m, st) {
+  if (!is.null(st$legend_html))
+    return(leaflet::addControl(m, htmltools::HTML(st$legend_html), position = "bottomleft", className = "info legend", layerId = "legend"))
+  leaflet::addLegend(m, "bottomleft", pal = st$legend$pal, values = st$legend$values, title = st$legend$title,
+                     opacity = 0.95, na.label = "No data", layerId = "legend")
+}
+
+draw_styled_map <- function(store, st, view = c(15, 20, 1.6)) {
+  leaflet_base() |>
+    leaflet::setView(view[1], view[2], view[3]) |>
+    leaflet::addPolygons(data = store$inform_sf, layerId = ~iso3, fillColor = st$fill, fillOpacity = 0.82,
+                         color = "#FFFFFF", weight = 0.7, opacity = 0.9, smoothFactor = 0.5,
+                         label = lapply(st$label, htmltools::HTML),
+                         highlightOptions = leaflet::highlightOptions(weight = 2, color = GR$ink, bringToFront = TRUE)) |>
+    add_style_legend(st)
+}
+
+# Send only new colours and labels to a map already on screen.
+restyle_map <- function(session, output_id, store, st) {
+  session$sendCustomMessage("gr-restyle", list(id = session$ns(output_id), ids = store$inform_sf$iso3, fill = st$fill, labels = st$label))
+  leaflet::leafletProxy(output_id, session) |> leaflet::removeControl("legend") |> add_style_legend(st)
+}

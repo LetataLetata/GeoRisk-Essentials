@@ -57,10 +57,10 @@ register_view(
       need_data(store, "inform")
       hz_lab <- reactive(names(ACT_HAZARDS)[ACT_HAZARDS == input$hz])
       # Missing-data contingency: countries need both the chosen danger and vulnerability.
-      chk <- reactive(analysis_data(store, c(input$hz, "vulnerability"), c(hz_lab(), "vulnerability")))
+      chk <- reactive(cached_check(store, c(input$hz, "vulnerability"), c(hz_lab(), "vulnerability")))
       sfd <- reactive(chk()$data)
       bc <- reactive(bivariate_classes(sfd()[[input$hz]], sfd()$vulnerability))
-      lee <- reactive(lee_test(sfd()[[input$hz]], sfd()$vulnerability, chk()$w$lw))
+      lee <- reactive(cached(paste0("lee:", input$hz), lee_test(sfd()[[input$hz]], sfd()$vulnerability, chk()$w$lw)))
 
       output$answer <- renderUI({
         b <- bc(); l <- lee(); pop <- sum(sfd()$population[b$double], na.rm = TRUE)
@@ -73,8 +73,8 @@ register_view(
         tagList(answer_box(HTML(txt)), data_note(chk()))
       })
 
-      map_server("map",
-        leaflet_r = reactive(bivariate_leaflet(store, chk()$expand(bc()$cls), chk()$expand(bc()$label), hz_lab(), "Vulnerability")),
+      fast_map_server("map", store,
+        style_r = reactive(bivariate_style(store, chk()$expand(bc()$cls), chk()$expand(bc()$label), hz_lab(), "Vulnerability")),
         static_r = reactive(bivariate_static(store, chk()$expand(bc()$cls), hz_lab(), "Vulnerability")),
         title = reactive(sprintf("Where %s meets vulnerability", tolower(hz_lab()))),
         caption = reactive(sprintf("Terciles across %d countries with data (grey: excluded); Lee's L = %.2f, p %s. Source: %s", chk()$n, lee()$L, fmt_p(lee()$p), store$sources$inform)),

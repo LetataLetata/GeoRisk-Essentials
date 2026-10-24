@@ -27,6 +27,7 @@ sf::sf_use_s2(FALSE)
 for (f in c(list.files("R/core", full.names = TRUE), list.files("R/analysis", full.names = TRUE))) source(f, local = FALSE)
 load_views("R/views")
 STORE <- load_store("data")
+warm_cache(STORE)
 
 pill <- function(v, active = FALSE) {
   tags$button(class = paste("gr-pill", if (active) "active"), `data-target` = v$id, type = "button", icon(v$icon), span(v$title))
