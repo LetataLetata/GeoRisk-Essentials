@@ -1,4 +1,4 @@
-# GeoRisk Observatory: build the processed data used by the app.
+# GEORISK Observatory Lite: build the processed data used by the app.
 #
 # Reads the raw files in raw/ and writes one .rds file per dataset to data/.
 # The app only reads data/, so this script is the single place where raw

@@ -300,7 +300,10 @@ image_chart_ui <- function(id, title, subtitle = NULL, height = 520) {
 }
 image_chart_server <- function(id, plot_r, title, caption = "", filename = id, width = 10, height = 8) {
   moduleServer(id, function(input, output, session) {
-    output$img <- renderPlot(suppressWarnings(print(plot_r())), res = 96)
+    # Transparent on screen so the glass panel shows through; downloads stay white.
+    output$img <- renderPlot(suppressWarnings(print(plot_r() + ggplot2::theme(plot.background = ggplot2::element_rect(fill = NA, colour = NA),
+                                                                         panel.background = ggplot2::element_rect(fill = NA, colour = NA)))),
+                             res = 96, bg = "transparent")
     register_downloads(output, plot_r, as_fun(filename), as_fun(title), as_fun(caption), width, height)
   })
 }

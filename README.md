@@ -1,4 +1,6 @@
-# GeoRisk Observatory: Essentials
+# GEORISK Observatory Lite
+
+A focused, five-step version of the GEORISK Observatory: spatial statistics of disaster risk for 191 countries (INFORM Risk Index 2026), built in R Shiny.
 
 **Open the app**
 

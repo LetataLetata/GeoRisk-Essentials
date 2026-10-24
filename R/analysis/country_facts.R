@@ -13,7 +13,7 @@ fetch_json <- function(u, timeout = 3) {
   if (Sys.time() < FACTS_STATE$offline_until) return(NULL)
   res <- tryCatch({
     if (requireNamespace("curl", quietly = TRUE)) {
-      h <- curl::new_handle(useragent = "GeoRisk-Observatory/1.0 (R Shiny student dashboard)",
+      h <- curl::new_handle(useragent = "GEORISK-Observatory-Lite/1.0 (R Shiny student dashboard)",
                             timeout = timeout, connecttimeout = timeout)
       r <- curl::curl_fetch_memory(u, handle = h)
       if (r$status_code != 200) stop("HTTP ", r$status_code)

@@ -1,5 +1,5 @@
-# GeoRisk Observatory: Essentials
-# A trimmed version of the GeoRisk dashboard built around five questions:
+# GEORISK Observatory Lite
+# A focused version of the GeoRisk dashboard built around five questions:
 #   What is in the data?                         (descriptive statistics)
 #   Where is disaster risk concentrated?        (spatial autocorrelation)
 #   What explains it, and does geography matter? (spatial regression)
@@ -36,7 +36,7 @@ pill <- function(v, active = FALSE) {
 ui <- function(req) {
   views <- views_for("analyst")
   page(
-    title = "GeoRisk Observatory: Essentials",
+    title = "GEORISK Observatory Lite",
     theme = bs_theme(version = 5, primary = "#111827", success = "#16A34A", font_scale = 0.95,
                      base_font = font_collection("Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif")),
     tags$head(
@@ -48,7 +48,7 @@ ui <- function(req) {
     div(class = "app-shell",
       div(class = "topbar",
         div(class = "brand", span(class = "brand-mark", icon("earth-africa")),
-            span(class = "brand-name", "GeoRisk", span(class = "brand-accent", "Essentials"))),
+            span(class = "brand-name", "GEORISK", span(class = "brand-accent", " Observatory"), span(class = "brand-lite", "Lite"))),
         div(class = "pill-bar pills-analyst", lapply(seq_along(views), function(i) pill(views[[i]], i == 1))),
         div(class = "layout-tools",
             tags$button(id = "fold-all", type = "button", title = "Fold every panel on this page", icon("compress"), " Fold all"),

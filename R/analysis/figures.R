@@ -54,6 +54,7 @@ fig_distributions <- function(d, vars, labels) {
     ggplot2::geom_histogram(bins = 20, fill = "#86B9A0", colour = "white", linewidth = 0.2) +
     ggplot2::geom_vline(data = med, ggplot2::aes(xintercept = value), colour = GR$ink, linetype = 2, linewidth = 0.5) +
     ggplot2::facet_wrap(~indicator, scales = "free", ncol = min(4, length(vars))) +
+    ggplot2::scale_x_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE, trim = TRUE, drop0trailing = TRUE)) +
     ggplot2::labs(x = "Value", y = "Number of countries") + theme_georisk(10)
 }
 
