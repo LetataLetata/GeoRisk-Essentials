@@ -3378,7 +3378,7 @@
       "checksum": "c64272fe3afc208293afa5ea2cc320f4"
     },
     "R/views/00_overview.R": {
-      "checksum": "9d9126f6d601e2c193c9da02d718f9fb"
+      "checksum": "366cb1b3f411667d88ab0fc6ac012497"
     },
     "R/views/01_data.R": {
       "checksum": "0f039d46781422697b4cba2d9a5d79f2"
@@ -3453,7 +3453,7 @@
       "checksum": "829ee3d7734cea8f836c8ade7766a42b"
     },
     "www/styles.css": {
-      "checksum": "f5a12a5d2589fc2fa1d2595546927850"
+      "checksum": "ea80f5d0336167f7fdc189b61983ff0f"
     },
     "R/views/07_help.R": {
       "checksum": "c2e40dea8e426403f314e16350a5a3de"
