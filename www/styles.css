@@ -702,3 +702,28 @@ button.xchip:hover { background: #E3F4E8; }
 .xpath-arrow { color: #A7B3AC; font-size: 0.7rem; }
 .xpath-arrow svg { fill: currentColor; }
 .xfocus .xrisk-score { white-space: nowrap; }
+
+/* ============================================================ welcome */
+.welcome { position: fixed; inset: 0; z-index: 2500; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+  background: radial-gradient(ellipse at 70% 20%, rgba(34, 197, 94, 0.35), transparent 55%),
+              radial-gradient(ellipse at 15% 85%, rgba(245, 158, 11, 0.28), transparent 50%),
+              linear-gradient(150deg, #06251B 0%, #0F3D2E 45%, #14532D 100%);
+  color: #fff; overflow-y: auto; transition: opacity 0.45s ease, visibility 0.45s ease; }
+.welcome.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+body.welcome-on { overflow: hidden; }
+.welcome-inner { text-align: center; max-width: 760px; animation: fadein 0.6s ease; }
+.welcome-big { font-size: clamp(3.4rem, 11vw, 7.5rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin: 0 0 26px; color: #fff; }
+.welcome-logo { width: 96px; height: 96px; margin: 0 auto 14px; border-radius: 50%; display: grid; place-items: center; font-size: 2.6rem;
+  background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(134, 239, 172, 0.55); color: #86EFAC; box-shadow: 0 0 60px rgba(74, 222, 128, 0.25); }
+.welcome-logo svg { fill: currentColor; }
+.welcome-name { font-size: clamp(1.6rem, 4.5vw, 2.4rem); font-weight: 800; letter-spacing: 0.02em; color: #fff; }
+.welcome-name span { color: #4ADE80; font-weight: 600; }
+.welcome-text { font-size: clamp(1rem, 2.2vw, 1.15rem); line-height: 1.6; color: #D1FAE5; margin: 22px auto 30px; max-width: 620px; }
+.welcome-go { border: 0; background: #fff; color: #0F3D2E; font-weight: 800; font-size: 1.1rem; border-radius: 999px; padding: 14px 30px;
+  display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); transition: transform 0.15s ease, background 0.15s ease; }
+.welcome-go svg { fill: currentColor; transition: transform 0.15s ease; }
+.welcome-go:hover { background: #DCFCE7; transform: translateY(-2px); }
+.welcome-go:hover svg { transform: translateX(4px); }
+.welcome-go:focus-visible { outline: 3px solid #86EFAC; outline-offset: 4px; }
+.welcome-foot { margin-top: 34px; font-size: 0.8rem; color: rgba(209, 250, 229, 0.7); letter-spacing: 0.03em; }
+.topbar .brand { cursor: pointer; }

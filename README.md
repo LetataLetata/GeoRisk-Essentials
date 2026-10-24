@@ -22,7 +22,7 @@ shiny::runGitHub("GeoRisk-Essentials", "LetataLetata", launch.browser = TRUE)
 
 **How it is built:** system architecture, app logic and wireframes are in [docs/](docs/README.md).
 
-**New here?** The app opens with a one-minute tour on the first visit (reopen it with **Quick tour**, top right). The **Help** tab explains how to open the app, what every page and button does, and the statistics in plain words.
+**New here?** The app opens on a welcome screen (click Continue, or press Enter; click the logo to see it again), then a one-minute tour on the first visit (reopen it with **Quick tour**, top right). The **Help** tab explains how to open the app, what every page and button does, and the statistics in plain words.
 
 A dashboard that follows one chain of analysis about disaster risk in 191 countries, in five steps. Each step answers one question and feeds the next; every step page shows where it sits in the chain and ends with a button to the next step.
 

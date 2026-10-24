@@ -94,6 +94,23 @@ welcome_guide <- function() {
             tags$button(type = "button", class = "guide-next", "Next ", icon("arrow-right"))))))
 }
 
+# The welcome screen: shown each time the app opens, before the Overview.
+# A big welcome, the logo and name, what the dashboard can be used for, and a
+# Continue arrow (www/app.js hides it; the first-visit tour follows).
+welcome_screen <- function() {
+  div(id = "welcome", class = "welcome", role = "dialog", `aria-modal` = "true", `aria-labelledby` = "welcome-title",
+    div(class = "welcome-inner",
+      h1(id = "welcome-title", class = "welcome-big", "Welcome"),
+      div(class = "welcome-logo", icon("earth-africa")),
+      div(class = "welcome-name", "GEORISK", span(" Observatory")),
+      p(class = "welcome-text",
+        "See where disasters, conflict and fragile conditions put people at risk in 191 countries, and why. ",
+        "Use it to inform travel advisories, business and investment risk screening, conflict and security briefings, ",
+        "and humanitarian planning."),
+      tags$button(type = "button", id = "welcome-go", class = "welcome-go", "Continue", icon("arrow-right")),
+      div(class = "welcome-foot", "INFORM Risk Index 2026 (European Commission JRC)  |  national-level data")))
+}
+
 ui <- function(req) {
   views <- views_for("analyst")
   page(
@@ -108,7 +125,7 @@ ui <- function(req) {
     ),
     div(class = "app-shell",
       div(class = "topbar",
-        div(class = "brand", span(class = "brand-mark", icon("earth-africa")),
+        div(class = "brand", title = "Back to the welcome screen", role = "button", tabindex = "0", span(class = "brand-mark", icon("earth-africa")),
             span(class = "brand-name", "GEORISK", span(class = "brand-accent", " Observatory"))),
         div(class = "pill-bar pills-analyst", lapply(seq_along(views), function(i) pill(views[[i]], i == 1))),
         div(class = "layout-tools",
@@ -131,6 +148,7 @@ ui <- function(req) {
           "Background maps: CARTO, OpenStreetMap contributors, Esri, OpenTopoMap. Country facts: REST Countries, Wikipedia. Built with R and Shiny. ",
           tags$a(href = "#", class = "foot-help", `data-goto` = "help", "Help and how to open the app"))
     ),
+    welcome_screen(),
     welcome_guide()
   )
 }

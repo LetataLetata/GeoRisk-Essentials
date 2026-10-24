@@ -212,13 +212,25 @@ $(function () {
     else if (e.key === 'ArrowLeft') show(cur - 1);
   });
   $(document).on('click', '#open-guide', openGuide);
-  // First visit only: open the guide once the dashboard has drawn.
-  if (get('gr-guide-seen') !== '1') {
-    var opened = false;
-    var openOnce = function () { if (opened) return; opened = true; setTimeout(openGuide, 600); };
-    $(document).one('shiny:idle', openOnce);
-    setTimeout(openOnce, 4000);
+  // Welcome screen: shown every time the app opens. Continue (or Enter / Esc)
+  // hides it and shows the Overview; on a first visit the tour opens next.
+  var $w = $('#welcome');
+  document.body.classList.add('welcome-on');
+  setTimeout(function () { $('#welcome-go').trigger('focus'); }, 100);
+  function closeWelcome() {
+    if (!$w.hasClass('gone')) {
+      $w.addClass('gone'); document.body.classList.remove('welcome-on');
+      go('overview');
+      if (get('gr-guide-seen') !== '1') setTimeout(openGuide, 500);
+    }
   }
+  function openWelcome() { $w.removeClass('gone'); document.body.classList.add('welcome-on'); setTimeout(function () { $('#welcome-go').trigger('focus'); }, 100); }
+  $(document).on('click', '#welcome-go', closeWelcome);
+  $(document).on('keydown', function (e) {
+    if ($w.hasClass('gone') || $g.hasClass('open')) return;
+    if (e.key === 'Enter' || e.key === 'Escape' || e.key === 'ArrowRight') { e.preventDefault(); closeWelcome(); }
+  });
+  $(document).on('click keydown', '.topbar .brand', function (e) { if (e.type === 'click' || e.key === 'Enter') openWelcome(); });
 
   // View menu: close after a choice or when clicking elsewhere.
   $(document).on('click', '.view-list button', function () { $(this).closest('details').removeAttr('open'); });

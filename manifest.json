@@ -3399,10 +3399,10 @@
       "checksum": "e8a5e20fb6d000c13dc5f0dc9e29666d"
     },
     "README.md": {
-      "checksum": "3f97b0bf2d3fbeb152f7765f00b49613"
+      "checksum": "3f38d3b1f2398eeef09670d28504bd33"
     },
     "app.R": {
-      "checksum": "4894409f225c40b2317ebfdb6b4e97be"
+      "checksum": "5b7403efb6a874a9ce2cfc967ef07b07"
     },
     "data/geography.rds": {
       "checksum": "22906f90ff76901e5e84944c19f410cd"
@@ -3450,10 +3450,10 @@
       "checksum": "840680b8db5349a59b68605a52c12edf"
     },
     "www/app.js": {
-      "checksum": "829ee3d7734cea8f836c8ade7766a42b"
+      "checksum": "d376e89d06a0321a8fe1fc86122ce823"
     },
     "www/styles.css": {
-      "checksum": "af35ab9987090fcde964ced971331a93"
+      "checksum": "fd2a501937d467bb5daeaf82719ef37b"
     },
     "R/views/07_help.R": {
       "checksum": "b94796f9d4a2029d3f7a89950dbeb057"
