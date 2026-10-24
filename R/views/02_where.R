@@ -9,8 +9,8 @@ register_view(
   ui = function(id, store) {
     ns <- NS(id)
     tagList(
-      step_head("where", "Where is risk concentrated?",
-                "Do high-risk countries sit next to each other, or is risk scattered at random? Choose overall risk or any hazard or weakness.",
+      step_head("where", textOutput(ns("title"), inline = TRUE),
+                textOutput(ns("lead"), inline = TRUE),
                 controls(selectInput(ns("var"), "Look at", variable_choices(store, INFORM_GROUPS), selected = "inform_risk", width = "280px"))),
       uiOutput(ns("answer")),
       gr_grid(cols = "1.6fr 1fr",
@@ -37,15 +37,34 @@ register_view(
       lisa <- reactive(cached(paste0("lisa:", input$var), local_moran(x(), chk()$w$lw, 0.05, "fdr")))
       src <- paste("Source:", store$sources$inform)
 
+      # The question follows the chosen risk: "Where is drought concentrated?"
+      output$title <- renderText({
+        name <- lc(lab())
+        sprintf("Where %s %s concentrated?", is_are(name), name)
+      })
+      output$lead <- renderText(sprintf("Do countries with high %s scores sit next to each other, or are they scattered at random? Choose overall risk or any hazard or weakness.", lc(lab())))
+
       output$answer <- renderUI({
         g <- gm(); l <- lisa(); d <- chk()$data
-        hh <- d$country[l$cluster %in% "High-High"]
-        reg <- sort(table(d$wb_region[l$cluster %in% "High-High"]), decreasing = TRUE)
-        txt <- if (g$p_perm < 0.05) sprintf("Yes. <b>%s</b> is clustered: neighbouring countries have similar values (Moran's I = %.2f, p %s). ", lab(), g$I, fmt_p(g$p_perm))
-               else sprintf("No clear pattern. <b>%s</b> is not significantly clustered (Moran's I = %.2f, p %s). ", lab(), g$I, fmt_p(g$p_perm))
-        txt <- paste0(txt, if (length(hh)) sprintf("<b>%d countries</b> form high-value clusters, mainly in %s. Problems such as conflict, drought and displacement cross borders, so neighbours benefit from planning together.",
-                                                    length(hh), paste(names(reg)[seq_len(min(2, length(reg)))], collapse = " and "))
-                           else "No high-value clusters pass the significance test.")
+        name <- lc(lab())
+        # Coping-capacity scores run the other way: a higher score means weaker.
+        coping <- store$vars$group[match(input$var, store$vars$var)] %in% "Coping capacity"
+        regions <- function(cl) {
+          r <- sort(table(d$wb_region[l$cluster %in% cl]), decreasing = TRUE)
+          paste(gsub(" & ", " and ", names(r)[seq_len(min(2, length(r)))]), collapse = " and ")
+        }
+        n_hh <- sum(l$cluster %in% "High-High"); n_ll <- sum(l$cluster %in% "Low-Low")
+        # The sentence follows the chosen risk and reads as a statement, not a yes or no.
+        txt <- if (g$p_perm < 0.05) {
+          paste0(sprintf("<b>%s</b> %s concentrated in groups of neighbouring countries rather than scattered at random (Moran's I = %.2f, p %s). ",
+                         cap1(name), is_are(name), g$I, fmt_p(g$p_perm)),
+                 if (n_hh) sprintf("%s in <b>%d countries</b>, mainly in %s", if (coping) cap1(paste("the weakest", name, "(highest scores) clusters")) else sprintf("The highest %s scores cluster", name),
+                                   n_hh, regions("High-High")) else
+                   sprintf("No group of high %s scores passes the significance test", name),
+                 if (n_ll) sprintf(", while %s cluster in %d countries, mainly in %s. ", if (coping) "the strongest" else "the lowest", n_ll, regions("Low-Low")) else ". ",
+                 if (n_hh) sprintf("Because %s %s borders, neighbouring countries gain from planning for %s together.", name, if (is_are(name) == "are") "cross" else "crosses", if (is_are(name) == "are") "them" else "it") else "")
+        } else sprintf("<b>%s</b> %s no clear geographic pattern: neighbouring countries are no more alike than chance would give (Moran's I = %.2f, p %s), so it is best handled country by country.",
+                       cap1(name), if (is_are(name) == "are") "show" else "shows", g$I, fmt_p(g$p_perm))
         tagList(answer_box(HTML(txt)), data_note(chk()))
       })
 

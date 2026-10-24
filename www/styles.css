@@ -654,8 +654,8 @@ button.xchip:hover { background: #E3F4E8; }
 body.welcome-on { overflow: hidden; }
 .welcome-top { display: flex; justify-content: center; }
 .welcome-logos { display: flex; align-items: center; gap: 22px; }
-.welcome-logo { width: 56px; height: 56px; }
-.welcome-logo-sep { width: 1px; height: 40px; background: rgba(23, 59, 48, 0.18); }
+.welcome-logo { width: 112px; height: 112px; }
+.welcome-logo-sep { width: 1px; height: 72px; background: rgba(23, 59, 48, 0.18); }
 .wits-logo { height: 56px; width: auto; max-width: 200px; object-fit: contain; }
 .wits-name { font-size: 0.78rem; font-weight: 600; line-height: 1.35; color: #3E5F53; text-align: left; letter-spacing: 0.02em; }
 .welcome-inner { align-self: center; justify-self: center; text-align: center; max-width: 640px; padding: 40px 0; animation: fadein 0.8s ease; }

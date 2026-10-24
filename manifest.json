@@ -3357,7 +3357,7 @@
       "checksum": "91e72ad554ae6fe570fe3a1e60c99883"
     },
     "R/core/components.R": {
-      "checksum": "a7e78b5c741a7520b9f32dd3ac0a0e79"
+      "checksum": "cfec08ae115ab419ae11bb77088ed38b"
     },
     "R/core/maps.R": {
       "checksum": "8abb498f5d29f3b151ce648233849c97"
@@ -3381,7 +3381,7 @@
       "checksum": "0f039d46781422697b4cba2d9a5d79f2"
     },
     "R/views/02_where.R": {
-      "checksum": "7058e49f4a18a9e3c376f75f747436c8"
+      "checksum": "ffa474b6440763008f9cd8dd38e9b054"
     },
     "R/views/03_why.R": {
       "checksum": "0ee7a463bd4d1ee39d6e1fab7fed9524"
@@ -3450,7 +3450,7 @@
       "checksum": "d376e89d06a0321a8fe1fc86122ce823"
     },
     "www/styles.css": {
-      "checksum": "920d777b7e2556038baef251c74b006e"
+      "checksum": "26d39709e39412a2409e2e143ad33cf1"
     },
     "R/views/07_help.R": {
       "checksum": "73f62e54515ce8232cb1137db782218c"
@@ -3474,7 +3474,7 @@
       "checksum": "325eadbd133ca611fffb99368b0d0d2b"
     },
     "R/views/02b_events.R": {
-      "checksum": "b5eb40e9e23a8064c2648c3a042616c5"
+      "checksum": "79e6a3fbb0efa3b8b9d596fe1d3ae1a2"
     },
     "data/point_pattern.rds": {
       "checksum": "8377d25f717845fa47be51f4ea493930"

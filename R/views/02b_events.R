@@ -51,9 +51,8 @@ register_view(
                                                   mag(), reg(), r$n %||% 0))))
         q <- r$quadrat; nn <- r$nn; lk <- store$points$link[[as.character(mag())]]
         vq <- pp_verdict_vmr(q); vn <- pp_verdict_nn(nn)
-        txt <- sprintf(paste0("%s. The <b>%s</b> earthquakes of magnitude %.1f or more %s are <b>%s</b>: counts per equal-area cell vary %s times as much as their mean (1 if random; chi-square p %s), ",
+        txt <- sprintf(paste0("The <b>%s</b> earthquakes of magnitude %.1f or more %s are <b>%s</b>: counts per equal-area cell vary %s times as much as their mean (1 if random; chi-square p %s), ",
                               "and the nearest other earthquake is on average %.0f%% %s than in a random pattern (nearest-neighbour index %.2f, z = %.1f, p %s). "),
-                       if (vq == "clustered" && vn == "clustered") "Yes" else if (vq == "clustered" || vn == "clustered") "Partly" else "No",
                        format(r$n, big.mark = ","), mag(), if (reg() == "World") "worldwide" else paste("in", reg()), if (vq == vn) vq else sprintf("%s by cell counts and %s by distances", vq, vn),
                        format(round(q$vmr, 1), big.mark = ","), fmt_p(q$p), abs(100 * (1 - nn$r)), if (nn$r < 1) "closer" else "further", nn$r, nn$z, fmt_p(nn$p))
         txt <- paste0(txt, sprintf("Countries with more recorded earthquakes per area have higher INFORM earthquake scores (Spearman's rho = %.2f, p %s), so the risk scores reflect where events really happen.",

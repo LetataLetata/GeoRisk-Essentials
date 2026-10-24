@@ -172,6 +172,9 @@ fmt_num <- function(x, d = 1) ifelse(is.na(x), "n/a", formatC(x, format = "f", d
 # Returns the relation and value, used as "p %s": "p < 0.001" or "p = 0.012".
 fmt_p <- function(p) ifelse(is.na(p), "= n/a", ifelse(p < 0.001, "< 0.001", paste("=", formatC(p, format = "f", digits = 3))))
 # Lower-case the first letter of a label unless it starts with an acronym (INFORM, GDP).
+cap1 <- function(x) paste0(toupper(substr(x, 1, 1)), substring(x, 2))
+# "is" or "are" for a variable name ("uprooted people are", "drought is").
+is_are <- function(x) if (grepl("(people|groups|conditions|shocks)$", x)) "are" else "is"
 lc <- function(x) ifelse(grepl("^[A-Z]{2,}", x), x, paste0(tolower(substr(x, 1, 1)), substr(x, 2, nchar(x))))
 fmt_pop <- function(x) {
   if (is.na(x)) return("n/a")
