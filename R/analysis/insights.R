@@ -100,7 +100,10 @@ country_profile <- function(store, iso) {
 neighbours_of <- function(store, iso, k = 5) {
   c0 <- store$geo$centroids
   i <- match(iso, c0$iso3); if (is.na(i)) return(character(0))
-  d <- sf::st_distance(sf::st_as_sf(c0[i, ], coords = c("lon", "lat"), crs = 4326),
-                       sf::st_as_sf(c0, coords = c("lon", "lat"), crs = 4326))
-  c0$iso3[order(as.numeric(d))][2:(k + 1)]
+  # Great-circle (haversine) distance in plain R, so no extra package is needed.
+  rad <- pi / 180
+  dlat <- (c0$lat - c0$lat[i]) * rad; dlon <- (c0$lon - c0$lon[i]) * rad
+  a <- sin(dlat / 2)^2 + cos(c0$lat[i] * rad) * cos(c0$lat * rad) * sin(dlon / 2)^2
+  d <- 2 * asin(pmin(1, sqrt(a)))
+  c0$iso3[order(d)][2:(k + 1)]
 }

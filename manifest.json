@@ -3345,7 +3345,7 @@
       "checksum": "a8ea22a1442dfcd4fb9437c542a44bda"
     },
     "R/analysis/insights.R": {
-      "checksum": "0518130797bbeb45f1669b4e05bd91d6"
+      "checksum": "8de70af38f8bb119345d0bfec1c04f65"
     },
     "R/analysis/lattice.R": {
       "checksum": "ff16899418f996bc5c28438744e52947"
@@ -3396,7 +3396,7 @@
       "checksum": "6b588739fdb79155ff0f5fb510baa9d0"
     },
     "R/views/06_explore.R": {
-      "checksum": "84aafeb7537512cb42b9ded4f50dfc0b"
+      "checksum": "e2e683982e7611e0a08624b01862f546"
     },
     "README.md": {
       "checksum": "d279ac6724600214f3fe89291a6cfcbc"

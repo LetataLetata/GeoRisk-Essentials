@@ -9,10 +9,12 @@ EXPLORE_WEAK <- c("development_and_deprivation", "inequality", "economic_depende
                   "drr", "governance", "communication", "physical_infrastructure", "access_to_health_care")
 
 # The largest part of a country, so zooming to Russia or Fiji is not stretched across the date line.
+# Areas are compared on the flat longitude-latitude plane (crs removed), which needs only GEOS:
+# the spherical version needs the lwgeom package, which hosted servers may not have.
 main_part_bbox <- function(g) {
   parts <- suppressWarnings(sf::st_cast(sf::st_geometry(g), "POLYGON"))
-  b <- sf::st_bbox(parts[which.max(as.numeric(sf::st_area(parts)))])
-  as.numeric(b)
+  flat <- sf::st_set_crs(parts, NA)
+  as.numeric(sf::st_bbox(parts[which.max(as.numeric(sf::st_area(flat)))]))
 }
 
 register_view(
@@ -79,7 +81,9 @@ register_view(
       }
 
       fly_to <- function(iso) {
-        b <- main_part_bbox(sfd[sfd$iso3 == iso, ])
+        # Never let a zoom problem end the session: fall back to the whole country's box.
+        b <- tryCatch(main_part_bbox(sfd[sfd$iso3 == iso, ]),
+                      error = function(e) as.numeric(sf::st_bbox(sfd[sfd$iso3 == iso, ])))
         leaflet::leafletProxy("map") |> leaflet::flyToBounds(b[1], b[2], b[3], b[4], options = list(maxZoom = 5, duration = 0.8))
       }
 
