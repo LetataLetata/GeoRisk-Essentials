@@ -1,4 +1,4 @@
-# Step 3, Explain: what explains risk, and does geography matter beyond it?
+# Step 3, Explain: what explains risk, and does geography still matter?
 # Ordinary regression on national wealth, tested for spatial dependence,
 # followed by the spatial model the Lagrange multiplier tests select.
 
@@ -11,7 +11,9 @@ register_view(
     tagList(
       step_head("why", "What explains risk, and does geography still matter?",
                 "Richer countries can prepare and recover better. But once wealth is taken into account, do neighbouring countries still look alike?",
-                controls(selectInput(ns("y"), "Explain", variable_choices(store, WHY_GROUPS), selected = "inform_risk", width = "280px"))),
+                controls(
+                  selectInput(ns("y"), "Y-axis", variable_choices(store, VARIABLE_GROUPS), selected = "inform_risk", width = "260px"),
+                  selectInput(ns("x"), "X-axis", variable_choices(store, VARIABLE_GROUPS), selected = "gdp_per_capita", width = "260px"))),
       uiOutput(ns("answer")),
       continent_scatter_ui(ns("scatter"), "Wealth and risk, continent by continent",
                            "Each panel is one continent, with its own fitted line and correlation. Click a point to label the country.", height = 600),
@@ -21,10 +23,10 @@ register_view(
       gr_card(title = "Model results", subtitle = "Coefficient of wealth and fit of the three models (click to unfold)", class = "folded",
               tableOutput(ns("models"))),
       method_box(
-        p(strong("Model. "), "The outcome is regressed on GDP per person (log scale, latest year up to 2022, standardised so the coefficient is the change per standard deviation of log wealth). A single, well-measured explanation keeps the result readable. INFORM components are not used as explanations, to avoid explaining the index with itself."),
-        p(strong("Testing for geography. "), "If the leftover differences (residuals) of ordinary regression are spatially clustered (Moran's I of residuals), its standard errors are unreliable. Lagrange multiplier tests indicate the kind of spatial model needed: a spatial lag model (a country's risk depends on its neighbours' risk) or a spatial error model (unmeasured factors shared by neighbours). The decision rule follows Anselin (2005)."),
+        p(strong("Model. "), "The outcome is regressed on GDP per person (log scale, latest year up to 2022, standardised so the coefficient is the change per standard deviation of log wealth). A strong relationship suggests wealth matters, but not necessarily enough to explain all risk."),
+        p(strong("Testing for geography. "), "If the leftover differences (residuals) of ordinary regression are spatially clustered (Moran's I of residuals), its standard errors are unreliable. Lagrange multiplier tests compare ordinary regression with spatial lag and spatial error alternatives."),
         p(strong("Continents. "), "The panels show whether the wealth relationship holds within each continent, not only across the world, which guards against a pattern created only by differences between continents."),
-        p(strong("Missing data. "), "Countries without GDP data are left out before the model is fitted, and the neighbours are worked out again among the rest; they are listed under the answer and shown grey on the map.")),
+        p(strong("Missing data. "), "Countries without GDP data are left out before the model is fitted, and the neighbours are worked out again among the rest; they are listed under the answer and on the map as grey.")),
       next_step("why")
     )
   },
@@ -51,11 +53,12 @@ register_view(
         tagList(answer_box(HTML(txt)), data_note(chk()))
       })
 
-      continent_scatter_server("scatter", data_r = reactive(chk()$data), x_r = reactive("gdp_per_capita"), y_r = reactive(input$y),
-        xlab_r = reactive("GDP per person (US dollars, log scale)"), ylab_r = reactive(paste(lab(), "(0-10)")), log_x_r = reactive(TRUE),
-        title = reactive(sprintf("%s against GDP per person, by continent", lab())),
-        caption = reactive(sprintf("Line: least-squares fit with 95%% confidence band in each continent; panel titles give Spearman's rho. n = %d countries with GDP data. %s", fit()$n, src)),
-        filename = reactive(paste0("wealth_by_continent_", input$y)))
+      continent_scatter_server("scatter", data_r = reactive(store$all), x_r = reactive(input$x), y_r = reactive(input$y),
+        xlab_r = reactive(var_label(store, input$x)), ylab_r = reactive(var_label(store, input$y)),
+        log_x_r = reactive(input$x %in% c("gdp_per_capita", "electricity_per_capita", "energy_per_capita", "population")),
+        title = reactive(sprintf("%s against %s, by continent", var_label(store, input$y), lc(var_label(store, input$x)))),
+        caption = reactive(sprintf("Line: least-squares fit with 95%% confidence band in each continent; panel titles give Spearman's rho. n = %d countries with paired data. %s", sum(!is.na(store$all[[input$x]]) & !is.na(store$all[[input$y]])), src)),
+        filename = reactive(paste0("scatter_", input$y, "_", input$x)))
 
       rvec <- reactive(chk()$expand(unname(stats::residuals(fit()$ols))))
       fast_map_server("resid", store,
