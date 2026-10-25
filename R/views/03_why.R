@@ -12,8 +12,8 @@ register_view(
       step_head("why", "What explains risk, and does geography still matter?",
                 "Richer countries can prepare and recover better. But once wealth is taken into account, do neighbouring countries still look alike?",
                 controls(
-                  selectInput(ns("x"), "X-axis", variable_choices(store, VARIABLE_GROUPS), selected = "gdp_per_capita", width = "260px"),
-                  selectInput(ns("y"), "Y-axis", variable_choices(store, VARIABLE_GROUPS), selected = "inform_risk", width = "260px"))),
+                  selectInput(ns("y"), "Explain", variable_choices(store, WHY_GROUPS), selected = "inform_risk", width = "280px"),
+                  selectInput(ns("x"), "Against", variable_choices(store, VARIABLE_GROUPS), selected = "gdp_per_capita", width = "260px"))),
       uiOutput(ns("answer")),
       continent_scatter_ui(ns("scatter"), "Countries by selected variables",
                            "Each panel is one continent, with its own fitted line and correlation. Click a point to label the country.", height = 600),
@@ -43,14 +43,14 @@ register_view(
       src <- paste0("Sources: ", store$sources$inform, "; ", store$sources$owid, ".")
 
       pair_data <- reactive({
-        d <- dat[!is.na(dat[[input$x]]) & !is.na(dat[[input$y]]), ]
-        if (nrow(d) == 0) return(NULL)
+        d <- dat[!is.na(dat[[input$x]]) & !is.na(dat[[input$y]]), , drop = FALSE]
+        if (nrow(d) == 0) return(dat[0, , drop = FALSE])
         d
       })
 
       pair_rho <- reactive({
         d <- pair_data()
-        if (is.null(d) || nrow(d) < 3) return(NA_real_)
+        if (nrow(d) == 0 || nrow(d) < 3) return(NA_real_)
         stats::cor(d[[input$x]], d[[input$y]], method = "spearman", use = "complete.obs")
       })
 
@@ -79,7 +79,7 @@ register_view(
           sprintf("The selected comparison of %s against %s shows %s. ", lc(x_lab()), lc(y_lab()), pair_phrase())
         }
         txt <- paste0(txt, if (f$residual_moran$p.value < 0.05)
-          sprintf("But what the selected model leaves unexplained still clusters (p %s), so a <b>%s model</b> fits best: neighbouring countries share risk factors that the chosen explanatory variable alone does not capture.",
+          sprintf("But what the selected model leaves unexplained still clusters (p %s), so a <b>%s model</b> fits best: neighbouring countries share risk factors that the chosen explanatory variable does not capture.",
                   fmt_p(f$residual_moran$p.value), lc(f$choice$model))
           else "What remains unexplained is not clustered, so the simple relationship is adequate for this pair.")
         tagList(answer_box(HTML(txt)), data_note(chk()))
