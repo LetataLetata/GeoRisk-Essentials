@@ -16,12 +16,12 @@ register_view(
       gr_grid(cols = "1.6fr 1fr",
         map_ui(ns("map"), "Clusters of high and low values", "Countries that are significantly similar to their neighbours", height = 460),
         chart_ui(ns("scatter"), "Each country against its neighbours", "Points in the upper right are high values surrounded by high values", height = 460)),
-      chart_ui(ns("compare"), "Which hazards and weaknesses cluster most?", "Global Moran's I for every INFORM variable; longer bars mean neighbours are more alike. The variable on the map is outlined for comparison, not as a single verdict.", height = 460),
+      chart_ui(ns("compare"), "Which hazards and weaknesses cluster most?", "Global Moran's I for every INFORM variable; longer bars mean neighbours are more alike. The variable on the map is outlined.", height = 620),
       method_box(
-        p(strong("Global Moran's I "), "measures whether neighbouring countries have similar values. It ranges from about -1 (neighbours unlike each other) to +1 (neighbours alike); 0 means no spatial pattern. Values far from zero and p < 0.05 suggest a non-random pattern, not proof of a single cause."),
-        p(strong("Local Moran's I "), "finds where the clustering is. High-High: a high-value country surrounded by high-value neighbours (a hot cluster). Low-Low: the reverse. High-Low and Low-High are spatial outliers."),
+        p(strong("Global Moran's I "), "measures whether neighbouring countries have similar values. It ranges from about -1 (neighbours unlike each other) to +1 (neighbours alike); 0 means no spatial pattern. Significance comes from 999 random rearrangements of the values across the map."),
+        p(strong("Local Moran's I "), "finds where the clustering is. High-High: a high-value country surrounded by high-value neighbours (a hot cluster). Low-Low: the reverse. High-Low and Low-High: outliers that differ from their neighbours. p-values are corrected for testing 191 countries at once (false discovery rate)."),
         p(strong("Neighbours "), "are each country's 5 nearest countries by distance between their centres, made symmetric, so islands also have neighbours."),
-        p(strong("Missing data. "), "Countries without a value for the indicator are left out before the analysis runs, and the neighbours are worked out again among the remaining countries, so a missing country does not distort the pattern.")),
+        p(strong("Missing data. "), "Countries without a value for the indicator are left out before the analysis runs, and the neighbours are worked out again among the remaining countries, so a missing country never counts as anyone's neighbour. They appear grey on the map.")),
       next_step("where")
     )
   },
@@ -37,6 +37,7 @@ register_view(
       lisa <- reactive(cached(paste0("lisa:", input$var), local_moran(x(), chk()$w$lw, 0.05, "fdr")))
       src <- paste("Source:", store$sources$inform)
 
+      # The question follows the chosen risk: "Where is drought concentrated?"
       output$title <- renderText({
         name <- lc(lab())
         sprintf("Where %s %s concentrated?", is_are(name), name)
@@ -46,21 +47,23 @@ register_view(
       output$answer <- renderUI({
         g <- gm(); l <- lisa(); d <- chk()$data
         name <- lc(lab())
+        # Coping-capacity scores run the other way: a higher score means weaker.
         coping <- store$vars$group[match(input$var, store$vars$var)] %in% "Coping capacity"
         regions <- function(cl) {
           r <- sort(table(d$wb_region[l$cluster %in% cl]), decreasing = TRUE)
           paste(gsub(" & ", " and ", names(r)[seq_len(min(2, length(r)))]), collapse = " and ")
         }
         n_hh <- sum(l$cluster %in% "High-High"); n_ll <- sum(l$cluster %in% "Low-Low")
+        # The sentence follows the chosen risk and reads as a statement, not a yes or no.
         txt <- if (g$p_perm < 0.05) {
-          paste0(sprintf("<b>%s</b> %s evidence of geographic concentration: neighbouring countries tend to have similar %s values (Moran's I = %.2f, p %s). ",
-                         cap1(name), is_are(name), name, g$I, fmt_p(g$p_perm)),
+          paste0(sprintf("<b>%s</b> %s concentrated in groups of neighbouring countries rather than scattered at random (Moran's I = %.2f, p %s). ",
+                         cap1(name), is_are(name), g$I, fmt_p(g$p_perm)),
                  if (n_hh) sprintf("%s in <b>%d countries</b>, mainly in %s", if (coping) cap1(paste("the weakest", name, "(highest scores) clusters")) else sprintf("The highest %s scores cluster", name),
                                    n_hh, regions("High-High")) else
                    sprintf("No group of high %s scores passes the significance test", name),
                  if (n_ll) sprintf(", while %s cluster in %d countries, mainly in %s. ", if (coping) "the strongest" else "the lowest", n_ll, regions("Low-Low")) else ". ",
-                 if (n_hh) sprintf("Because %s %s borders, shared planning for %s can be more effective than acting country by country.", name, if (is_are(name) == "are") "cross" else "crosses", if (is_are(name) == "are") "these areas" else "this risk") else "")
-        } else sprintf("<b>%s</b> %s no clear geographic pattern: neighbouring countries are no more alike than chance would give (Moran's I = %.2f, p %s), so the result is better treated as country-by-country variation rather than a stable spatial cluster.",
+                 if (n_hh) sprintf("Because %s %s borders, neighbouring countries gain from planning for %s together.", name, if (is_are(name) == "are") "cross" else "crosses", if (is_are(name) == "are") "them" else "it") else "")
+        } else sprintf("<b>%s</b> %s no clear geographic pattern: neighbouring countries are no more alike than chance would give (Moran's I = %.2f, p %s), so it is best handled country by country.",
                        cap1(name), if (is_are(name) == "are") "show" else "shows", g$I, fmt_p(g$p_perm))
         tagList(answer_box(HTML(txt)), data_note(chk()))
       })

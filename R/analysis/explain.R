@@ -10,9 +10,6 @@
 #     record near the country;
 #   - where the score sits in the INFORM structure, up to overall risk.
 # Plain functions, no Shiny; the Explore page turns the result into the panel.
-#
-# The narrative below has been tightened so it does not overstate a single
-# explanatory factor when the score is driven by several indicators.
 
 # INFORM structure: each score and the score it feeds into.
 VAR_PARENT <- c(
@@ -75,22 +72,22 @@ INDICATORS <- list(
   children_u5 = rbind(ind("CM", "Children who die before age 5, per 1,000 births", "num"),
                       ind("CUW", "Children under 5 who are underweight", "pct")),
   recent_shocks = rbind(ind("VU.VGR.OG.NATDIS-CUR", "People affected by natural disasters, latest year"),
-                       ind("VU.VGR.OG.NATDIS-1", "People affected by natural disasters, the year before"),
-                       ind("VU.VGR.OG.NATDIS-2", "People affected by natural disasters, two years before")),
+                        ind("VU.VGR.OG.NATDIS-1", "People affected by natural disasters, the year before"),
+                        ind("VU.VGR.OG.NATDIS-2", "People affected by natural disasters, two years before")),
   food_security = rbind(ind("SN.ITK.DEFC.ZS", "People who do not get enough to eat", "pct"),
-                       ind("FS.ADSA", "Food supply compared with what people need", "pct", -1)),
+                        ind("FS.ADSA", "Food supply compared with what people need", "pct", -1)),
   drr = ind("SG_DSR_LGRGSR", "Disaster risk reduction plans in place (UN Sendai score, 0 to 1)", "num", -1),
   governance = rbind(ind("GovernmentEffectiveness", "Government effectiveness (World Bank, -2.5 to 2.5)", "num", -1),
                      ind("CPI", "Corruption Perceptions Index (0 = most corrupt, 100 = clean)", "num", -1)),
   communication = rbind(ind("EG.ELC.ACCS.ZS", "People with electricity", "pct", -1),
-                       ind("IT.NET.USER.P2", "People using the internet", "pct", -1),
-                       ind("SE.ADT.LITR.ZS", "Adults who can read and write", "pct", -1)),
+                        ind("IT.NET.USER.P2", "People using the internet", "pct", -1),
+                        ind("SE.ADT.LITR.ZS", "Adults who can read and write", "pct", -1)),
   physical_infrastructure = rbind(ind("SH.H2O.SAFE.ZS", "People with basic drinking water", "pct", -1),
-                                ind("SH.STA.BASS.ZS", "People with basic sanitation", "pct", -1)),
+                                  ind("SH.STA.BASS.ZS", "People with basic sanitation", "pct", -1)),
   access_to_health_care = rbind(ind("PHIS", "Doctors per 10,000 people", "num", -1),
-                               ind("SH_ACS_MCV2", "Children fully vaccinated against measles", "pct", -1),
-                               ind("HEALTH_EXP", "Health spending per person (US dollars, PPP)", "usd", -1),
-                               ind("MMR", "Mothers who die in childbirth, per 100,000 births", "num"))
+                                ind("SH_ACS_MCV2", "Children fully vaccinated against measles", "pct", -1),
+                                ind("HEALTH_EXP", "Health spending per person (US dollars, PPP)", "usd", -1),
+                                ind("MMR", "Mothers who die in childbirth, per 100,000 births", "num"))
 )
 
 # Value of an indicator for one country, and the share of countries it is worse than.
@@ -204,10 +201,7 @@ explain_variable <- function(store, iso, var) {
                     score = vapply(kids, function(k) as.numeric(r[[k]]), numeric(1)), stringsAsFactors = FALSE)
     d[order(-d$score), ]
   } else NULL
-
-  # Use the decomposition only when it is clearly informative; otherwise state a
-  # more modest, evidence-based explanation rather than pretending one metric is
-  # the sole cause.
+  # One plain sentence: the score, then what drives it.
   lab <- var_label(store, var)
   lab_s <- if (var == "inform_risk") "overall risk" else lcfirst_word(lab)
   lvl <- if (var == "inform_risk") as.character(r$risk_class) else level_of(pct)
@@ -216,20 +210,16 @@ explain_variable <- function(store, iso, var) {
     sprintf("%s scores 0 for %s: the data show nobody exposed (for example, no coastline or no hazard zone).", r$country, lab_s)
   else {
     lead <- sprintf("%s scores %.1f out of 10 for %s, higher than %.0f%% of countries.", r$country, x, lab_s, pct)
-    if (!is.null(parts) && nrow(parts) && !is.na(parts$score[1])) {
-      paste(lead, sprintf("The largest contribution comes from %s (%.1f out of 10).", lcfirst_word(parts$label[1]), parts$score[1]))
-    } else if (!is.null(facts) && nrow(facts)) {
+    if (!is.null(parts) && nrow(parts) && !is.na(parts$score[1]))
+      paste(lead, sprintf("The biggest part is %s (%.1f out of 10).", lcfirst_word(parts$label[1]), parts$score[1]))
+    else if (!is.null(facts) && nrow(facts)) {
       high <- !is.na(pct) && pct >= 40
-      f <- facts[if (high) which.max(facts$worse) else which.min(facts$better), ][1, , drop = FALSE]
-      if (nrow(f) == 0) {
-        lead
-      } else {
-        last_word <- if (high) "A key driver is" else "One contributor is"
-        ppl <- f$fmt == "people"
-        cmp <- if (high) sprintf("%s than in %.0f%% of countries", if (f$dir < 0) "worse" else if (ppl) "more" else "higher", f$worse)
-        else sprintf("%s than in %.0f%% of countries", if (f$dir < 0) "better" else if (ppl) "fewer" else "lower", f$better)
-        paste(lead, sprintf("%s %s: %s, %s.", last_word, lcfirst_word(f$label), f$shown, cmp))
-      }
+      w <- ifelse(is.na(facts$worse), if (high) -1 else 101, facts$worse)
+      f <- facts[if (high) which.max(w) else which.min(w), ]
+      ppl <- f$fmt == "people"
+      cmp <- if (high) sprintf("%s than in %.0f%% of countries", if (f$dir < 0) "worse" else if (ppl) "more" else "higher", f$worse)
+             else sprintf("%s than in %.0f%% of countries", if (f$dir < 0) "better" else if (ppl) "fewer" else "lower", f$better)
+      paste(lead, sprintf("%s %s: %s, %s.", if (high) "The main reason:" else "It is low because of", lcfirst_word(f$label), f$shown, cmp))
     } else lead
   }
   list(var = var, label = lab, score = x, rank = rank, n = n_ok, pct = pct, level = lvl,
@@ -237,4 +227,3 @@ explain_variable <- function(store, iso, var) {
        events = events_for(store, iso, var), path = var_path(var),
        description = store$vars$description[match(var, store$vars$var)])
 }
-
