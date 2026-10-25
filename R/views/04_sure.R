@@ -15,9 +15,10 @@ register_view(
           gr_card(title = "Blind spots", subtitle = "High risk, but the evidence is weak", uiOutput(ns("blind"))),
           gr_card(title = "Does the clustering survive?", subtitle = "Moran's I and clusters, recomputed four ways", uiOutput(ns("robust"))))),
       method_box(
-        p(strong("Uncertainty ranges. "), "INFORM does not publish error margins, but it does rate each country's Lack of Reliability (0 = complete, recent data; 10 = weak data). We assume each pillar can be off by up to 1 index point for the least reliable country, scaled by its reliability, and recompute risk 1,000 times with the INFORM formula. The 90% range covers the middle 90% of those results."),
+        p(strong("Uncertainty ranges. "), "INFORM does not publish error margins, but it does rate each country's Lack of Reliability (0 = complete, recent data; 10 = weak data). In this dashboard, we treat the published score as a point estimate and simulate how much it would move under a simple error model. This is a sensitivity check, not a formal confidence interval."),
         p(strong("Blind spots "), "are countries rated High or Very High risk whose Lack of Reliability is above 5, or with more than 20% of their indicators estimated (imputed)."),
-        p(strong("Robustness. "), "Moran's I and the High-High clusters are recomputed on (1) the published scores, (2) scores adjusted for data reliability (empirical Bayes shrinkage towards the world average: weak-data scores are pulled towards the mean in proportion to their unreliability), (3) percentile ranks, which ignore extreme values, and (4) only the countries with reliable data (Lack of Reliability up to 4.5).")),
+        p(strong("Robustness. "), "Moran's I and the High-High clusters are recomputed on (1) the published scores, (2) scores adjusted for data reliability, (3) scores converted to percentile ranks, and (4) only countries with strong data. The broad pattern is more informative than any single version."),
+        p(strong("Use with caution. "), "The idea is to show where uncertainty matters most, not to claim a precise probability of error for every country.")),
       next_step("sure")
     )
   },
@@ -37,9 +38,9 @@ register_view(
         u <- sim(); r <- rob()
         hi <- u[u$risk_class %in% c("High", "Very High"), ]
         rc <- r$`Published clusters that reappear`[-1]
-        tagList(answer_box(HTML(sprintf(paste0("The big picture holds. Across four versions of the data, Moran's I stays between <b>%.2f and %.2f</b> and at least %.0f%% of the high-risk clusters reappear. ",
-                                       "Of %d high-risk countries, %d keep their class in at least 95%% of simulations. The caution is in <b>%d blind spots</b>, where risk is high but the data are weak."),
-                                min(r$`Moran's I`), max(r$`Moran's I`), 100 * min(rc, na.rm = TRUE), nrow(hi), sum(hi$p_high >= 0.95), nrow(bs)))),
+        tagList(answer_box(HTML(sprintf(paste0("The broad pattern remains fairly stable. Across four versions of the data, Moran's I stays between <b>%.2f and %.2f</b>, and at least %.0f%% of the published high-risk clusters reappear in the adjusted versions. ",
+                                        "Of %d high-risk countries, %d keep their class in at least 95%% of simulations. The main caution is in <b>%d blind spots</b>, where risk is high but the evidence is weak and local checks matter more than the headline score."),
+                                 min(r$`Moran's I`), max(r$`Moran's I`), 100 * min(rc, na.rm = TRUE), nrow(hi), sum(hi$p_high >= 0.95), nrow(bs)))),
                 data_note(chk, on_map = FALSE))
       })
 

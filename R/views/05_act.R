@@ -37,17 +37,17 @@ register_view(
         gr_card(title = "Countries carrying both burdens", subtitle = "Top third for danger and for vulnerability", uiOutput(ns("list")))),
       gr_card(title = "What helps at national level", subtitle = "Recommendations for national governments of the countries listed above",
         div(class = "scale-note", icon("flag"), strong(" Country level, not city level. "),
-            "These recommendations follow from national scores. They say what national governments and their partners can do; they do not describe conditions in particular cities, towns or communities, where risk can be very different. Local plans need local data."),
+            "These recommendations follow from national scores. They say what national governments and their partners can do; they do not describe conditions in particular cities, towns or communities."),
         uiOutput(ns("hazard_action")),
         div(class = "gr-grid", style = "grid-template-columns:repeat(4,minmax(0,1fr));margin:0;",
-          div(class = "action-card", h4("Guide where people build"), p("National planning rules that keep new housing and services out of floodplains and off unstable slopes, and fund upgrading of settlements already there.")),
+          div(class = "action-card", h4("Guide where people build"), p("National planning rules that keep new housing and services out of floodplains and off unstable slopes, and fund upgrading of older settlements.")),
           div(class = "action-card", h4("Warn everyone"), p("National early-warning systems that reach people without smartphones: radio, sirens and community networks.")),
           div(class = "action-card", h4("Protect incomes"), p("Social grants, insurance and national food reserves so a shock does not push families into poverty.")),
           div(class = "action-card", h4("Plan across borders"), p("Risk clusters across neighbouring countries, so regional agreements and shared early warning work better than acting alone.")))),
       method_box(
-        p(strong("Classes. "), "Countries are split into thirds (terciles) on the chosen danger and on INFORM vulnerability, giving nine combinations. The double burden is the top third on both."),
-        p(strong("Lee's L "), "(Lee, 2001) tests whether high danger and high vulnerability not only go together but also cluster in the same neighbourhoods; significance from 499 permutations. Spearman's rho gives the plain correlation."),
-        p(strong("Missing data. "), "Countries without a value for the chosen danger or for vulnerability are left out before the thirds are worked out, and neighbours are worked out again among the rest; they appear grey on the map."),
+        p(strong("Classes. "), "Countries are split into thirds (terciles) on the chosen danger and on INFORM vulnerability, giving nine combinations. The double burden is the top third on both. This is a simple summary, not a causal model."),
+        p(strong("Lee's L "), "(Lee, 2001) tests whether high danger and high vulnerability not only go together but also cluster in the same neighbourhoods; significance comes from 499 permutations. A significant value suggests a shared spatial pattern, not proof of one single driver."),
+        p(strong("Missing data. "), "Countries without a value for the chosen danger or for vulnerability are left out before the thirds are worked out, and neighbours are worked out again among the remaining countries."),
         p(strong("Scale. "), "All results are for whole countries. A country in the double burden can contain safe areas, and a country outside it can contain very exposed communities.")),
       next_step("act")
     )
@@ -65,11 +65,11 @@ register_view(
       output$answer <- renderUI({
         b <- bc(); l <- lee(); pop <- sum(sfd()$population[b$double], na.rm = TRUE)
         reg <- sort(table(sfd()$wb_region[b$double]), decreasing = TRUE)
-        txt <- sprintf("<b>%d countries</b>, home to %s people, face high %s and high vulnerability%s",
+        txt <- sprintf("<b>%d countries</b>, home to %s people, sit in the top third for both %s and vulnerability%s",
                        sum(b$double), fmt_pop(pop), ACT_PHRASE[[input$hz]],
                        if (length(reg)) sprintf(", mostly in %s. ", paste(names(reg)[seq_len(min(2, length(reg)))], collapse = " and ")) else ". ")
-        txt <- paste0(txt, if (l$p < 0.05) sprintf("The two burdens cluster together in space (Lee's L = %.2f, p %s), so regional programmes can reach many of them at once.", l$L, fmt_p(l$p))
-                           else sprintf("The two burdens do not significantly cluster together in space (Lee's L = %.2f, p %s), so each country needs its own plan.", l$L, fmt_p(l$p)))
+        txt <- paste0(txt, if (l$p < 0.05) sprintf("This pattern is consistent with a shared spatial burden (Lee's L = %.2f, p %s), so regional programmes may reach several of these countries at once.", l$L, fmt_p(l$p))
+                           else sprintf("This pattern does not show a significant shared spatial burden (Lee's L = %.2f, p %s), so action needs to be planned country by country as well as regionally.", l$L, fmt_p(l$p)))
         tagList(answer_box(HTML(txt)), data_note(chk()))
       })
 

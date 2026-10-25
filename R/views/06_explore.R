@@ -353,20 +353,19 @@ register_view(
             div(class = "xsub", style = "margin:-2px 0 6px;", "Overall risk combines these three. Thin dark line: world median."),
             tags$button(type = "button", class = "xpart-wrap", onclick = goto_score("hazard_and_exposure"), bar("Hazard and exposure", r$hazard_and_exposure, med[1], GR$pillar_cols[["Hazard"]])),
             tags$button(type = "button", class = "xpart-wrap", onclick = goto_score("vulnerability"), bar("Vulnerability", r$vulnerability, med[2], GR$pillar_cols[["Vulnerability"]])),
-            tags$button(type = "button", class = "xpart-wrap", onclick = goto_score("lack_of_coping_capacity"), bar("Lack of coping capacity", r$lack_of_coping_capacity, med[3], GR$pillar_cols[["Coping"]])))
-          else parts_box(e),
-          if (overall) tagList(
+            tags$button(type = "button", class = "xpart-wrap", onclick = goto_score("lack_of_coping_capacity"), bar("Lack of coping capacity", r$lack_of_coping_capacity, med[3], GR$pillar_cols[["Lack of coping capacity"]])),
             h4(class = "xh", "Highest hazards"), div(lapply(names(hz), function(h) chip(var_label(store, h), hz[[h]], h))),
             h4(class = "xh", "Main weak points"), div(lapply(names(wk), function(w) chip(var_label(store, w), wk[[w]], w))),
             div(class = "xsub", "Click a hazard or weak point to see why it is rated so."))
-          else facts_box(e),
+          else parts_box(e),
+          if (overall) NULL else facts_box(e),
           events_box(e),
           path_box(e, r),
           if (trend_var() == fv) tagList(h4(class = "xh", sprintf("%s since 2017", if (overall) "Risk" else e$label)),
                                          plotOutput(ns("spark"), height = "130px")),
           h4(class = "xh", "What helps (national level)"),
           div(class = "scale-note", icon("flag"), b_(" For the country as a whole. "),
-              sprintf("Based on %s's national scores. These are actions for the national government and its partners, not an assessment of any particular city, town or community, where conditions can differ a lot.", r$country)),
+              sprintf("Based on %s's national scores. These are actions for the national government and its partners, not an assessment of any particular city, town or community, where conditions may differ sharply from the national average.", r$country)),
           tags$ul(class = "xactions",
             if (!is.null(act_line)) tags$li(b_(paste0(e$label, ":")), " ", act_line)
             else tagList(lapply(pr$hazard_lines, function(h) tags$li(b_(paste0(h$name, ":")), " ", h$gov)),
